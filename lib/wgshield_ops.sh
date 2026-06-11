@@ -83,7 +83,7 @@ install_comp() {
         fi
         create_backup "vps" "before-install-${comp}" >/dev/null 2>&1
         if ! has_docker; then
-            install_docker >/dev/null 2>&1
+            install_docker || { err "${ERR_DOCKER_NOT_INSTALLED}"; return 1; }
         fi
         ensure_docker_compose >/dev/null 2>&1 || { err "${DOCKER_COMPOSE_MISSING}"; return 1; }
         mkdir -p "$dir"
