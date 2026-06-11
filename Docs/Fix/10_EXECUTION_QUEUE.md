@@ -37,7 +37,7 @@ A ordem NÃO segue apenas o nível do achado (Alto/Médio/Baixo). Segue:
 | 3 | Alto de lógica sem firewall | Concluída | — |
 | 4 | Médio de idempotência e validação | Concluída | — |
 | 5 | Alto runtime sem firewall pesado | Concluída | — |
-| 6 | Firewall e segurança pesada | Bloqueado | Não — exige VPS teste + VNC |
+| 6 | Firewall e segurança pesada | Concluída | — |
 | 7 | Futuro/redesign | Bloqueado | Não agora |
 
 ---

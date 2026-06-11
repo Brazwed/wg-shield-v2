@@ -91,13 +91,24 @@ Branch: `fix/execution-queue-round-1`
 
 ## Resumo
 
-| Status     | Qtd |
-| ---------- | --- |
-| OK         | 23  |
-| SKIP       | 1   |
-| PENDENTE   | 1   |
-| BLOQUEADO  | 12  |
+| Status     | Qtd | Detalhe |
+| ---------- | --- | ------- |
+| OK         | 24  | 24 ações corretivas validadas (3+3+3+6+4+5 por etapa) |
+| SKIP       | 1   | A10/F31 — no-op justificado |
+| PENDENTE   | 1   | LOG_RESTORED em backup.sh — interpolação `$timestamp` |
+| BLOQUEADO  | 10  | D1-D10 — futuro/redesign |
 
-**Progresso:** 24/36 achados endereçados (23 corrigidos + 1 no-op verificado)
+**Progresso:** 25/36 achados endereçados (24 corrigidos + 1 no-op verificado; B6 resolve F09+F16)
 
 **Etapa 6:** CONCLUÍDA — C1/C2/C3/C4/C5 todos OK
+
+---
+
+## Status pós-Etapa 6
+
+- Etapas 1–6: concluídas
+- Itens A/B/C: concluídos (24 OK, 1 SKIP)
+- LOG_RESTORED: pendente (não bloqueia merge)
+- D-tier/futuro: 10 itens bloqueados por decisão
+- Pronto para revisão final/merge: sim, salvo revisão humana
+- UFW real em Oracle Cloud: não validado — requer snapshot + VNC
