@@ -1,0 +1,5 @@
+fatal: not a git repository (or any of the parent directories): .git
+fatal: detected dubious ownership in repository at '/opt/wg-shield'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory /opt/wg-shield
