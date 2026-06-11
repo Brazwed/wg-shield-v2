@@ -334,6 +334,7 @@ WIZARD_MOD_9="DNS Protection (port 53)"
 
 # ─── Hardening Module Messages ──────────────────────────────
 HARDEN_UNATTENDED_MSG="=== Basic Security and Automatic Reboot ==="
+HARDEN_UNATTENDED_REBOOT_WARN="⚠ Auto-reboot configured for 04:00. Containers will be restarted automatically."
 HARDEN_UNATTENDED_ALREADY="Unattended-upgrades already configured"
 HARDEN_UNATTENDED_SUCCESS="Unattended-upgrades configured (reboot 04:00)"
 

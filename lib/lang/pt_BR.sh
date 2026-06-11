@@ -334,6 +334,7 @@ WIZARD_MOD_9="DNS Protection (porta 53)"
 
 # ─── Hardening Module Messages ──────────────────────────────
 HARDEN_UNATTENDED_MSG="=== Segurança Básica e Reinício Automático ==="
+HARDEN_UNATTENDED_REBOOT_WARN="⚠ Auto-reboot configurado para 04:00. Containers serão reiniciados automaticamente."
 HARDEN_UNATTENDED_ALREADY="Unattended-upgrades já configurado"
 HARDEN_UNATTENDED_SUCCESS="Unattended-upgrades configurado (reboot 04:00)"
 

@@ -8,6 +8,7 @@ mod_unattended() {
         DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades
         dpkg-reconfigure --priority=low unattended-upgrades
     fi
+    warn "${HARDEN_UNATTENDED_REBOOT_WARN}"
     sed -i 's|^.*Unattended-Upgrade::Automatic-Reboot .*|Unattended-Upgrade::Automatic-Reboot "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
     sed -i 's|^.*Unattended-Upgrade::Automatic-Reboot-Time .*|Unattended-Upgrade::Automatic-Reboot-Time "04:00";|' /etc/apt/apt.conf.d/50unattended-upgrades
     log "${HARDEN_UNATTENDED_SUCCESS}"
