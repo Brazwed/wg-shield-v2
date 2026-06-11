@@ -4,8 +4,8 @@
 
 - Data: 2026-06-11
 - Branch: `fix/execution-queue-round-1`
-- Último commit: 31af884
-- Total de commits na branch: 38 (desde `main`)
+- Último commit: d229722
+- Total de commits na branch: 39 (desde `main`)
 - Objetivo: Consolidar estado pós-Etapas 1-6, confirmar achados fechados, separar riscos remanescentes
 
 ## Resumo executivo
@@ -193,7 +193,7 @@ A branch está estável: syntax OK, zero bugs críticos novos, 25 findings fecha
 
 | Item | Estado |
 |---|---|
-| iptables real | Inalterado (Oracle default + C1 insert) |
+| iptables real | Oracle default preservado + alterações controladas C1/C2; sem alterações durante revisão final |
 | ip6tables real | Inalterado (5 regras originais) |
 | UFW | Não instalado |
 | Docker | Instalado para teste C2; container nginx removível |
