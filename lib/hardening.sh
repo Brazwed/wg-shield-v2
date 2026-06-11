@@ -116,7 +116,11 @@ mod_firewall() {
     ensure_iptables_input_rule -p tcp --dport 51821 -j ACCEPT
 
     iptables -P INPUT DROP
-    iptables -P FORWARD DROP
+    if docker_firewall_present; then
+        warn "${HARDEN_FIREWALL_DOCKER_FORWARD_WARN}"
+    else
+        iptables -P FORWARD DROP
+    fi
     iptables -P OUTPUT ACCEPT
 
     echo -e "  ${BD}${C}${HARDEN_FIREWALL_IP6}${NC}"
@@ -128,7 +132,11 @@ mod_firewall() {
     ensure_ip6tables_input_rule -p udp --dport 51820 -j ACCEPT
 
     ip6tables -P INPUT DROP
-    ip6tables -P FORWARD DROP
+    if docker_firewall_present; then
+        warn "${HARDEN_FIREWALL_DOCKER_FORWARD_WARN}"
+    else
+        ip6tables -P FORWARD DROP
+    fi
     ip6tables -P OUTPUT ACCEPT
 
     if ! dpkg -l | grep -qw iptables-persistent; then

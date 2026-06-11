@@ -26,6 +26,13 @@ ensure_ip6tables_input_rule() {
     fi
 }
 
+docker_firewall_present() {
+    command -v docker >/dev/null 2>&1 && systemctl is-active --quiet docker 2>/dev/null && return 0
+    iptables -S DOCKER >/dev/null 2>&1 && return 0
+    iptables -S DOCKER-USER >/dev/null 2>&1 && return 0
+    return 1
+}
+
 ask_firewall_choice() {
     echo ""
 
