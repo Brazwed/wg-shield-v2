@@ -1,0 +1,2 @@
+NAMES               STATUS             PORTS
+wgshield-c2-nginx   Up About an hour   0.0.0.0:18080->80/tcp, [::]:18080->80/tcp
