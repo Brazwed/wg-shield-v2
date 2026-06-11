@@ -33,14 +33,14 @@ Branch: `fix/execution-queue-round-1`
 
 ## Etapa 4 — Médio de idempotência e validação
 
-| ID      | Fxx       | Status   | Commit | Observação                                  |
-| ------- | --------- | -------- | ------ | ------------------------------------------- |
-| B1      | F13       | PENDENTE | —      | mod_swap fstab idempotente                  |
-| B2      | F14       | PENDENTE | —      | mod_memory sysctl idempotente               |
-| B4      | F36       | PENDENTE | —      | Checar espaço antes de dd swap              |
-| B8      | F37       | PENDENTE | —      | Aviso de auto-reboot                         |
-| B9      | F38       | PENDENTE | —      | Mostrar 9 mods no status (destravado por A2) |
-| B10-VAL | F22       | PENDENTE | —      | Precisa T26 em sandbox antes de corrigir     |
+| ID      | Fxx       | Status   | Commit   | Observação                                                                  |
+| ------- | --------- | -------- | -------- | --------------------------------------------------------------------------- |
+| B1      | F13       | OK       | 4dc7b21  | `grep -q` antes de append no fstab                                          |
+| B2      | F14       | OK       | e772265  | sed replace ou append para swappiness e vfs_cache_pressure                  |
+| B4      | F36       | OK       | ba27472  | `df --output=avail` checa 2300MB antes de dd; i18n `HARDEN_SWAP_NOSPACE`   |
+| B8      | F37       | OK       | 4947689  | `warn` com i18n `HARDEN_UNATTENDED_REBOOT_WARN` antes dos sed              |
+| B9      | F38       | OK       | bfafa31  | `"dns"` + `${WIZARD_MOD_9}` adicionados ao arrays em show_already_installed  |
+| B10-VAL | F22       | PENDENTE | —        | Bug estrutural confirmado por análise de código; requer sandbox p/ T26       |
 
 ## Etapa 5 — Alto runtime sem firewall pesado
 
@@ -80,11 +80,12 @@ Branch: `fix/execution-queue-round-1`
 
 ## Pendências / follow-ups
 
-| Item         | Tipo               | Status   | Observação                                                          |
-| ------------ | ------------------ | -------- | ------------------------------------------------------------------- |
-| Shellcheck   | ferramenta         | PENDENTE | Não instalado; recomendado antes da Etapa 4                         |
-| LOG_RESTORED  | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19 |
-| A10/F31      | no-op verificado   | OK       | README já correto; bug real (NEW VPS não instala WIZARD_MOD_9) corrigido em A2 |
+| Item           | Tipo               | Status   | Observação                                                                                    |
+| -------------- | ------------------ | -------- | --------------------------------------------------------------------------------------------- |
+| Shellcheck     | ferramenta         | PENDENTE | Não instalado; recomendado antes da Etapa 5                                                    |
+| LOG_RESTORED   | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19                       |
+| A10/F31        | no-op verificado   | OK       | README já correto; bug real (NEW VPS não instala WIZARD_MOD_9) corrigido em A2                |
+| B10-VAL / F22  | validação          | PENDENTE | Bug estrutural confirmado por análise; dpkg-reconfigure gated behind install; falta sandbox p/ T26 |
 
 ---
 
@@ -92,9 +93,9 @@ Branch: `fix/execution-queue-round-1`
 
 | Status     | Qtd |
 | ---------- | --- |
-| OK         | 10  |
+| OK         | 15  |
 | SKIP       | 1   |
-| PENDENTE   | 10  |
+| PENDENTE   | 6   |
 | BLOQUEADO  | 15  |
 
-**Progresso:** 11/36 achados endereçados (10 corrigidos + 1 no-op verificado)
+**Progresso:** 16/36 achados endereçados (15 corrigidos + 1 no-op verificado)

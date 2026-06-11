@@ -35,7 +35,7 @@ A ordem NÃO segue apenas o nível do achado (Alto/Médio/Baixo). Segue:
 | 1 | Baixo real, zero risco | Concluída | — |
 | 2 | Médio/Alto zero risco | Concluída | — |
 | 3 | Alto de lógica sem firewall | Concluída | — |
-| 4 | Médio de idempotência e validação | Pendente | Sim, com sandbox |
+| 4 | Médio de idempotência e validação | Concluída (B10-VAL pendente) | B10 requer sandbox |
 | 5 | Alto runtime sem firewall pesado | Pendente | Sim, com testes |
 | 6 | Firewall e segurança pesada | Bloqueado | Não — exige VPS teste + VNC |
 | 7 | Futuro/redesign | Bloqueado | Não agora |
