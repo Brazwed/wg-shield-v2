@@ -145,6 +145,8 @@ mod_bbr() {
         fi
     done
 
+    _hardening_applied="true"
+
     echo -e "  ${BD}${C}${HARDEN_BBR_MODULE}${NC}"
     if ! lsmod | grep -q tcp_bbr; then
         modprobe tcp_bbr
