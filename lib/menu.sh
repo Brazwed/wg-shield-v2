@@ -145,8 +145,8 @@ show_already_installed() {
 
     # Show hardening modules
     echo -e "  ${BD}${MSG_DETECT_SYSTEM}${NC}"
-    local mods=("unattended" "fail2ban" "swap" "memory" "firewall" "bbr" "limits" "logs")
-    local names=("${WIZARD_MOD_1}" "${WIZARD_MOD_2}" "${WIZARD_MOD_3}" "${WIZARD_MOD_4}" "${WIZARD_MOD_5}" "${WIZARD_MOD_6}" "${WIZARD_MOD_7}" "${WIZARD_MOD_8}")
+    local mods=("unattended" "fail2ban" "swap" "memory" "firewall" "bbr" "limits" "logs" "dns")
+    local names=("${WIZARD_MOD_1}" "${WIZARD_MOD_2}" "${WIZARD_MOD_3}" "${WIZARD_MOD_4}" "${WIZARD_MOD_5}" "${WIZARD_MOD_6}" "${WIZARD_MOD_7}" "${WIZARD_MOD_8}" "${WIZARD_MOD_9}")
     local all_ok=true
     for i in "${!mods[@]}"; do
         if check_module_status "${mods[$i]}"; then
