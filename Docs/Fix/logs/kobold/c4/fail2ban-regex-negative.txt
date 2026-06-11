@@ -1,0 +1,34 @@
+
+Running tests
+=============
+
+Use   failregex file : /tmp/wgshield-c4-logs/dns-abuse.conf
+Use         log file : /tmp/wgshield-c4-logs/dns-negative.log
+Use         encoding : UTF-8
+
+
+Results
+=======
+
+Failregex: 0 total
+
+Ignoreregex: 2 total
+|-  #) [# of hits] regular expression
+|   1) [1] ^\[\d+:\d+\] info: 127\.0\.0\.1
+|   2) [1] ^\[\d+:\d+\] info: ::1
+`-
+
+Date template hits:
+
+Lines: 5 lines, 2 ignored, 0 matched, 3 missed
+[processed in 0.08 sec]
+
+|- Ignored line(s):
+|  [1:0] info: 127.0.0.1 localhost-query.com. A IN
+|  [1:0] info: ::1 localhost-ipv6.com. AAAA IN
+`-
+|- Missed line(s):
+|  unbound[1]: start of service
+|  [1:0] notice: init module 0
+|  some random log line
+`-

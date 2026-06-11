@@ -133,8 +133,8 @@ Muda runtime e estado do sistema, mas sem tocar em regras de firewall. Cada um e
 - [x] C2/F03: **Concluído** (19f35f1) — validado em VPS kobold com Docker + nginx
 - [x] C3/F33: **Concluído** (f4c3066) — mod_firewall() respeita FW_TYPE; mock 9/9 PASS; UFW real pendente VPS+snapshot
 - [x] Firewall Detection Matrix: **Concluído** (3c0cc4c) — bug `grep -q "active"` corrigido para `grep -qw`; detect_firewall mock 12/12 PASS; mod_firewall/open_port mock 18/18 PASS
-- [ ] C4/F07: Próximo — depende de A3 (OK), mas precisa de teste dedicado
-- [ ] C5/F34: Bloqueado — depende de C1 estável (OK)
+- [x] C4/F07: **Concluído** (2d7d69e) — dns-abuse filter funcional; mod_dns FW_TYPE-aware; fail2ban-regex 5/5 PASS; mock 31/31 PASS
+- [ ] C5/F34: Próximo — depende de C1 estável (OK)
 
 ### Checklist de segurança — obrigatório ANTES de começar
 

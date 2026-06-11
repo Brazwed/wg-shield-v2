@@ -58,8 +58,8 @@ Branch: `fix/execution-queue-round-1`
 | C1 | F01 | OK     | 0c6a137  | ensure_iptables_input_rule insere ACCEPT antes de DROP; VPS kobold OK |
 | C2 | F03 | OK     | 19f35f1  | docker_firewall_present() preserva FORWARD; VPS kobold com Docker OK |
 | C3 | F33 | OK     | f4c3066  | mod_firewall() respeita FW_TYPE; mock 9/9 PASS; UFW real pendente VPS+snapshot |
-| C4 | F07 | BLOQUEADO | —     | Depende de A3 (OK); exige VPS teste     |
-| C5 | F34 | BLOQUEADO | —     | Depende de C1 estável                   |
+| C4 | F07 | OK     | 2d7d69e  | dns-abuse filter funcional; mod_dns FW_TYPE-aware; fail2ban-regex 5/5 PASS |
+| C5 | F34 | BLOQUEADO | —     | Depende de C1 estável                                                   |
 
 ## Etapa 7 — Futuro/redesign
 
@@ -82,7 +82,7 @@ Branch: `fix/execution-queue-round-1`
 
 | Item           | Tipo               | Status   | Observação                                                                  |
 | -------------- | ------------------ | -------- | --------------------------------------------------------------------------- |
-| Shellcheck     | ferramenta         | OK       | v0.11.0 instalado via binary em ~/.local/bin; relata SC2086 pré-existente   |
+| Shellcheck     | ferramenta         | OK       | v0.11.0 instalado; SC2086 em mod_dns eliminado por C4                    |
 | LOG_RESTORED   | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19    |
 | A10/F31        | no-op verificado   | OK       | README já correto; bug real corrigido em A2                                 |
 | Firewall Matrix| validação          | OK       | Detecção UFW/iptables/none validada; bug grep -qw corrigido; UFW real pendente |
@@ -93,9 +93,9 @@ Branch: `fix/execution-queue-round-1`
 
 | Status     | Qtd |
 | ---------- | --- |
-| OK         | 21  |
+| OK         | 22  |
 | SKIP       | 1   |
 | PENDENTE   | 1   |
-| BLOQUEADO  | 14  |
+| BLOQUEADO  | 13  |
 
-**Progresso:** 22/36 achados endereçados (21 corrigidos + 1 no-op verificado)
+**Progresso:** 23/36 achados endereçados (22 corrigidos + 1 no-op verificado)

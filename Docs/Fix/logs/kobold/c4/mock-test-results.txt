@@ -1,0 +1,64 @@
+
+=== T1: filter.d/dns-abuse.conf structure ===
+  PASS: failregex uses <HOST>
+  PASS: failregex has unbound pattern
+  PASS: ignoreregex present
+  PASS: ignoreregex skips localhost
+  PASS: ignoreregex skips ::1
+  PASS: filter not empty (failregex has content)
+
+=== T2: jail [dns-abuse] filter = dns-abuse (not empty) ===
+  PASS: filter = dns-abuse
+  PASS: no empty filter
+  PASS: enabled = true
+  PASS: port = 53
+  PASS: backend = systemd
+
+=== T3: open_port 53 FW_TYPE=iptables mock ===
+  PASS: iptables -p udp --dport 53
+  PASS: iptables -p tcp --dport 53
+  PASS: no ufw in iptables path
+
+=== T4: open_port 53 FW_TYPE=ufw mock ===
+  PASS: ufw allow 53/udp
+  PASS: ufw allow 53/tcp
+  PASS: no iptables raw in ufw path
+
+=== T5: open_port FW_TYPE=none — silent ===
+  PASS: no iptables when none
+  PASS: no ufw when none
+
+=== T6: source code — no SC2086, no RULES_DNS, uses -I ===
+  PASS: _insert_dns_hashlimit uses iptables -I
+  PASS: no iptables $RULE (SC2086)
+  PASS: no RULES_DNS array
+  PASS: no ${RULE:3} (SC2086)
+  PASS: no unquoted iptables -A INPUT
+  PASS: hashlimit uses quoted variables
+
+=== T7: mod_dns netfilter-persistent save conditional ===
+        netfilter-persistent save
+        netfilter-persistent enable
+    else
+        netfilter-persistent save
+    fi
+}
+--
+        netfilter-persistent save
+    fi
+    log "${HARDEN_DNS_SUCCESS}"
+--
+        netfilter-persistent save
+    elif [ "$FW_TYPE" = "ufw" ]; then
+        yes | ufw delete allow 53/udp >/dev/null 2>&1 || true
+  PASS: mod_dns has netfilter-persistent save
+  PASS: mod_dns checks FW_TYPE=iptables for netfilter
+
+=== T8: mod_dns_remove FW_TYPE-aware + filter cleanup ===
+  PASS: ufw delete in remove
+  PASS: ufw delete tcp in remove
+  PASS: rm filter.d/dns-abuse.conf in remove
+  PASS: FW_TYPE check in remove
+
+
+=== Results: 31 PASS, 0 FAIL ===
