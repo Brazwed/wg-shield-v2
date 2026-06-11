@@ -260,36 +260,42 @@ mod_dns() {
     echo ""
     echo -e "  ${BD}${C}${HARDEN_DNS_MSG}${NC}"
 
-    if ! command -v iptables >/dev/null 2>&1; then
-        err "${HARDEN_FIREWALL_IPTABLES}"
+    if [ ! -f /etc/fail2ban/filter.d/dns-abuse.conf ]; then
+        mkdir -p /etc/fail2ban/filter.d
+        cat > /etc/fail2ban/filter.d/dns-abuse.conf <<'FILTER'
+[Definition]
+failregex = ^\[\d+:\d+\] info: <HOST> \S+ \S+ \S+
+            ^.*unbound\[\d+\]: \[\d+:\d+\] info: <HOST> \S+ \S+ \S+
+ignoreregex = ^\[\d+:\d+\] info: 127\.0\.0\.1
+              ^\[\d+:\d+\] info: ::1
+FILTER
     fi
 
-    if ! dpkg -l | grep -qw iptables-mod-hashlimit 2>/dev/null && ! iptables -m hashlimit --help >/dev/null 2>&1; then
-        err "${HARDEN_DNS_IPTABLES}"
-    fi
+    if [ "$FW_TYPE" = "none" ]; then
+        warn "${HARDEN_DNS_NO_FIREWALL_WARN}"
+    else
+        open_port "53/udp"
+        open_port "53/tcp"
 
-    RULES_DNS=(
-        "-A INPUT -p udp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_udp --hashlimit-htable-expire 30000 -j DROP"
-        "-A INPUT -p udp --dport 53 -j ACCEPT"
-        "-A INPUT -p tcp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_tcp --hashlimit-htable-expire 30000 -j DROP"
-        "-A INPUT -p tcp --dport 53 -j ACCEPT"
-    )
-
-    for RULE in "${RULES_DNS[@]}"; do
-        if ! iptables -C ${RULE:3} 2>/dev/null; then
-            iptables $RULE
+        if [ "$FW_TYPE" = "iptables" ]; then
+            if iptables -m hashlimit --help >/dev/null 2>&1; then
+                _insert_dns_hashlimit udp dns_udp
+                _insert_dns_hashlimit tcp dns_tcp
+            else
+                err "${HARDEN_DNS_IPTABLES}"
+            fi
         fi
-    done
+    fi
 
     echo -e "  ${BD}${C}${HARDEN_DNS_JAIL}${NC}"
     if [ -f /etc/fail2ban/jail.local ]; then
         if ! grep -q "\[dns-abuse\]" /etc/fail2ban/jail.local; then
-cat <<EOF | tee -a /etc/fail2ban/jail.local
+            cat >> /etc/fail2ban/jail.local <<EOF
 
 [dns-abuse]
 enabled = true
 port = 53
-filter =
+filter = dns-abuse
 backend = systemd
 action = iptables-allports[name=DNS]
 maxretry = 200
@@ -304,8 +310,36 @@ EOF
         warn "${HARDEN_DNS_JAIL_ALREADY}"
     fi
 
-    netfilter-persistent save
+    if [ "$FW_TYPE" = "iptables" ]; then
+        netfilter-persistent save
+    fi
     log "${HARDEN_DNS_SUCCESS}"
+}
+
+_insert_dns_hashlimit() {
+    local proto="$1" hname="$2"
+
+    if iptables -C INPUT -p "$proto" --dport 53 -m hashlimit \
+        --hashlimit-above 30/sec --hashlimit-burst 50 \
+        --hashlimit-mode srcip --hashlimit-name "$hname" \
+        --hashlimit-htable-expire 30000 -j DROP 2>/dev/null; then
+        return 0
+    fi
+
+    local accept_line
+    accept_line=$(iptables -L INPUT --line-numbers -n 2>/dev/null | awk -v proto="$proto" '$2=="ACCEPT" && $3==proto && /dpt:53/ {print $1; exit}')
+
+    if [ -n "$accept_line" ]; then
+        iptables -I INPUT "$accept_line" -p "$proto" --dport 53 -m hashlimit \
+            --hashlimit-above 30/sec --hashlimit-burst 50 \
+            --hashlimit-mode srcip --hashlimit-name "$hname" \
+            --hashlimit-htable-expire 30000 -j DROP
+    else
+        ensure_iptables_input_rule -p "$proto" --dport 53 -m hashlimit \
+            --hashlimit-above 30/sec --hashlimit-burst 50 \
+            --hashlimit-mode srcip --hashlimit-name "$hname" \
+            --hashlimit-htable-expire 30000 -j DROP
+    fi
 }
 
 mod_dns_remove() {
@@ -313,24 +347,29 @@ mod_dns_remove() {
     echo -e "  ${BD}${C}${HARDEN_DNS_REMOVE_MSG}${NC}"
     echo ""
 
-    # Remove iptables hashlimit rules for DNS
-    while iptables -C INPUT -p udp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_udp --hashlimit-htable-expire 30000 -j DROP 2>/dev/null; do
-        iptables -D INPUT -p udp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_udp --hashlimit-htable-expire 30000 -j DROP 2>/dev/null
-    done
+    if [ "$FW_TYPE" = "iptables" ]; then
+        while iptables -C INPUT -p udp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_udp --hashlimit-htable-expire 30000 -j DROP 2>/dev/null; do
+            iptables -D INPUT -p udp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_udp --hashlimit-htable-expire 30000 -j DROP
+        done
 
-    while iptables -C INPUT -p tcp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_tcp --hashlimit-htable-expire 30000 -j DROP 2>/dev/null; do
-        iptables -D INPUT -p tcp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_tcp --hashlimit-htable-expire 30000 -j DROP 2>/dev/null
-    done
+        while iptables -C INPUT -p tcp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_tcp --hashlimit-htable-expire 30000 -j DROP 2>/dev/null; do
+            iptables -D INPUT -p tcp --dport 53 -m hashlimit --hashlimit-above 30/sec --hashlimit-burst 50 --hashlimit-mode srcip --hashlimit-name dns_tcp --hashlimit-htable-expire 30000 -j DROP
+        done
 
-    while iptables -C INPUT -p udp --dport 53 -j ACCEPT 2>/dev/null; do
-        iptables -D INPUT -p udp --dport 53 -j ACCEPT 2>/dev/null
-    done
+        while iptables -C INPUT -p udp --dport 53 -j ACCEPT 2>/dev/null; do
+            iptables -D INPUT -p udp --dport 53 -j ACCEPT
+        done
 
-    while iptables -C INPUT -p tcp --dport 53 -j ACCEPT 2>/dev/null; do
-        iptables -D INPUT -p tcp --dport 53 -j ACCEPT 2>/dev/null
-    done
+        while iptables -C INPUT -p tcp --dport 53 -j ACCEPT 2>/dev/null; do
+            iptables -D INPUT -p tcp --dport 53 -j ACCEPT
+        done
 
-    # Remove fail2ban DNS abuse jail
+        netfilter-persistent save
+    elif [ "$FW_TYPE" = "ufw" ]; then
+        yes | ufw delete allow 53/udp >/dev/null 2>&1 || true
+        yes | ufw delete allow 53/tcp >/dev/null 2>&1 || true
+    fi
+
     if [ -f /etc/fail2ban/jail.local ]; then
         if grep -q "\[dns-abuse\]" /etc/fail2ban/jail.local; then
             local jail_tmp
@@ -341,7 +380,7 @@ mod_dns_remove() {
         fi
     fi
 
-    netfilter-persistent save
+    rm -f /etc/fail2ban/filter.d/dns-abuse.conf
     log "${HARDEN_DNS_REMOVE_SUCCESS}"
 }
 

@@ -378,6 +378,7 @@ HARDEN_LOGS_SUCCESS="Logs optimized (journald 200MB)"
 
 HARDEN_DNS_MSG="=== Public DNS Protection (Port 53 with rate-limit) ==="
 HARDEN_DNS_IPTABLES="iptables hashlimit module not available"
+HARDEN_DNS_NO_FIREWALL_WARN="No firewall detected — port 53 opened without rate-limit protection"
 HARDEN_DNS_JAIL="=== Fail2Ban DNS Abuse Jail ==="
 HARDEN_DNS_JAIL_ALREADY="DNS abuse jail already configured"
 HARDEN_DNS_SUCCESS="DNS protection applied (30 req/s per IP)"
