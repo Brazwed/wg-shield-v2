@@ -41,6 +41,7 @@ install_comp() {
         if ! has_docker; then
             install_docker >/dev/null 2>&1
         fi
+        ensure_docker_compose >/dev/null 2>&1 || { err "${DOCKER_COMPOSE_MISSING}"; return 1; }
         mkdir -p "$dir"
         if [ -d "$dir/.git" ]; then
             (cd "$dir" && git pull --quiet) || true
@@ -73,7 +74,10 @@ ENVEOF
             chmod 600 "$dir/.env" 2>/dev/null || true
         fi
         chmod +x "$dir"/*.sh 2>/dev/null || true
-        (cd "$dir" && docker compose up -d 2>&1) >/dev/null
+        if ! (cd "$dir" && docker_compose up -d 2>&1) >/dev/null; then
+            err "${DOCKER_COMPOSE_UP_FAILED}: $display"
+            return 1
+        fi
         sleep 3
         return 0
     fi
@@ -182,7 +186,10 @@ ENVEOF
     fi
 
     spinner "${MSG_LOG_STARTING} $display"
-    (cd "$dir" && docker compose up -d 2>&1)
+    if ! (cd "$dir" && docker_compose up -d 2>&1); then
+        err "${DOCKER_COMPOSE_UP_FAILED}: $display"
+        return 1
+    fi
     sleep 3
 
     local st
@@ -191,6 +198,10 @@ ENVEOF
         log "$display ${LOG_INSTALLED} $ports"
     else
         warn "$display ${ERR_WONT_START}. ${MSG_CHECK_LOGS}"
+    fi
+
+    if ! ensure_container_running "$container" 2>/dev/null; then
+        warn "${DOCKER_CONTAINER_NOT_RUNNING}: $display"
     fi
 
     show_comp_info "$comp"
@@ -211,7 +222,7 @@ start_comp() {
     fi
 
     spinner "${MSG_LOG_STARTING} $display"
-    (cd "$dir" && docker compose up -d 2>&1)
+    (cd "$dir" && docker_compose up -d 2>&1)
     sleep 2
 
     local st
@@ -230,7 +241,7 @@ stop_comp() {
     comp_exists "$comp" || { warn "$display ${ERR_NOT_INSTALLED}"; return 1; }
 
     spinner "${MSG_LOG_STOPPING} $display"
-    (cd "$dir" && docker compose down --timeout 10 2>&1)
+    (cd "$dir" && docker_compose down --timeout 10 2>&1)
     log "$display ${MSG_STATUS_STOPPED}"
 }
 
@@ -252,10 +263,10 @@ update_comp() {
     st=$(get_container_status "$container")
     if [ "$st" = "running" ]; then
         spinner "${MSG_LOG_RESTARTING}"
-        (cd "$dir" && docker compose restart 2>&1)
+        (cd "$dir" && docker_compose restart 2>&1)
     else
         spinner "${MSG_LOG_STARTING} container"
-        (cd "$dir" && docker compose up -d 2>&1)
+        (cd "$dir" && docker_compose up -d 2>&1)
     fi
 
     log "$display ${LOG_UPDATED}"
@@ -273,7 +284,7 @@ remove_comp() {
     create_backup "$comp" "before-remove"
 
     spinner "${MSG_LOG_REMOVING} $display"
-    (cd "$dir" && docker compose down -v --timeout 10 2>&1)
+    (cd "$dir" && docker_compose down -v --timeout 10 2>&1)
     rm -rf "$dir"
     log "$display ${LOG_REMOVED}"
 }
@@ -335,7 +346,7 @@ logs_comp() {
     comp_exists "$comp" || { warn "$display ${ERR_NOT_INSTALLED}"; return 1; }
 
     info "${MSG_INFO_LOGS}..."
-    (cd "$dir" && docker compose logs -f --no-log-prefix)
+    (cd "$dir" && docker_compose logs -f --no-log-prefix)
 }
 
 shell_comp() {
@@ -347,7 +358,7 @@ shell_comp() {
     st=$(get_container_status "$container")
     [ "$st" != "running" ] && { warn "$display ${ERR_NOT_RUNNING}. ${MSG_USE_TO_START}"; return 1; }
 
-    (cd "$dir" && docker compose exec -it "$container" sh)
+    (cd "$dir" && docker_compose exec -it "$container" sh)
 }
 
 toggle_dns_public() {
@@ -482,7 +493,7 @@ ENVEOF
     pid2=$!
 
     # Restart container with down/up to re-read .env
-    (cd "$dir" && docker compose down --timeout 10 && docker compose up -d 2>&1) >/dev/null
+    (cd "$dir" && docker_compose down --timeout 10 && docker_compose up -d 2>&1) >/dev/null
     sleep 3
 
     kill $pid2 2>/dev/null
