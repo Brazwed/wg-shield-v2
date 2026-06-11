@@ -69,7 +69,7 @@ install_docker() {
         return 0
     fi
 
-    confirm "${PROMPT_CONFIRM}" || return 0
+    confirm "${PROMPT_CONFIRM}" || return 1
 
     create_backup "vps" "before-docker-install"
 
