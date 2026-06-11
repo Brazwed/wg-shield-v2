@@ -99,11 +99,10 @@ mod_memory() {
     log "${HARDEN_MEMORY_SUCCESS}"
 }
 
-mod_firewall() {
-    echo ""
-    echo -e "  ${BD}${C}${HARDEN_FIREWALL_MSG}${NC}"
+mod_firewall_iptables() {
     if ! command -v iptables >/dev/null 2>&1; then
         err "${HARDEN_FIREWALL_IPTABLES}"
+        return 1
     fi
 
     echo -e "  ${BD}${C}${HARDEN_FIREWALL_IP4}${NC}"
@@ -146,6 +145,42 @@ mod_firewall() {
     else
         netfilter-persistent save
     fi
+}
+
+mod_firewall_ufw() {
+    if ! command -v ufw >/dev/null 2>&1; then
+        DEBIAN_FRONTEND=noninteractive apt install -y ufw
+    fi
+
+    ufw default deny incoming >/dev/null 2>&1 || true
+    ufw default allow outgoing >/dev/null 2>&1 || true
+    ufw allow "${SSH_PORT}"/tcp comment "SSH" >/dev/null 2>&1 || true
+    ufw allow 51820/udp comment "WireGuard" >/dev/null 2>&1 || true
+    ufw allow 51821/tcp comment "WG-Easy" >/dev/null 2>&1 || true
+
+    echo "y" | ufw enable >/dev/null 2>&1 || true
+
+    FW_TYPE="ufw"
+    FW_ACTIVE=true
+}
+
+mod_firewall() {
+    echo ""
+    echo -e "  ${BD}${C}${HARDEN_FIREWALL_MSG}${NC}"
+
+    case "${FW_TYPE:-iptables}" in
+        ufw)
+            mod_firewall_ufw
+            ;;
+        iptables)
+            mod_firewall_iptables
+            ;;
+        *)
+            warn "${HARDEN_FIREWALL_UNKNOWN_TYPE_WARN}"
+            mod_firewall_iptables
+            ;;
+    esac
+
     log "${HARDEN_FIREWALL_SUCCESS}"
 }
 

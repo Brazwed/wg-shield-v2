@@ -359,6 +359,7 @@ HARDEN_FIREWALL_IP6="=== ip6tables Firewall (IPv6 Leak Blocking) ==="
 HARDEN_FIREWALL_IPTABLES="iptables not installed"
 HARDEN_FIREWALL_SUCCESS="Firewall IPv4 + IPv6 configured"
 HARDEN_FIREWALL_DOCKER_FORWARD_WARN="Docker active detected — FORWARD DROP skipped to preserve containers"
+HARDEN_FIREWALL_UNKNOWN_TYPE_WARN="Unknown FW_TYPE — falling back to iptables"
 
 HARDEN_BBR_MSG="=== Backing up configuration files ==="
 HARDEN_BBR_BACKUP="Backup created"
