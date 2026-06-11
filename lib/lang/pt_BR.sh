@@ -172,6 +172,7 @@ DOCKER_COMPOSE_NOT_AVAILABLE="Docker Compose não disponível nos repositórios 
 DOCKER_COMPOSE_INSTALL_FAILED="Falha ao instalar Docker Compose"
 DOCKER_COMPOSE_UP_FAILED="Falha ao iniciar containers com Docker Compose"
 DOCKER_CONTAINER_NOT_RUNNING="Container não está rodando"
+WG_PASSWORD_HASH_FAILED="Falha ao gerar hash de senha WG-Easy"
 
 # ─── Firewall ───────────────────────────────────────────────
 MSG_FW_NO_FIREWALL="Nenhum firewall ativo."

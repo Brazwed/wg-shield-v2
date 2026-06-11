@@ -172,6 +172,7 @@ DOCKER_COMPOSE_NOT_AVAILABLE="Docker Compose not available in apt repositories"
 DOCKER_COMPOSE_INSTALL_FAILED="Docker Compose installation failed"
 DOCKER_COMPOSE_UP_FAILED="Docker Compose up failed"
 DOCKER_CONTAINER_NOT_RUNNING="Container is not running"
+WG_PASSWORD_HASH_FAILED="Failed to generate WG-Easy password hash"
 
 # ─── Firewall ───────────────────────────────────────────────
 MSG_FW_NO_FIREWALL="No firewall active."
