@@ -159,7 +159,7 @@ mod_firewall() {
 mod_bbr() {
     echo ""
     echo -e "  ${BD}${C}${HARDEN_BBR_MSG}${NC}"
-    for CONF in /etc/sysctl.conf /etc/security/limits.conf /etc/systemd/journald.conf; do
+    for CONF in /etc/sysctl.conf /etc/sysctl.d/99-wgshield.conf /etc/security/limits.conf /etc/systemd/journald.conf; do
         if [ ! -f "${CONF}.bak" ]; then
             cp "$CONF" "${CONF}.bak"
             echo "    [✔] ${HARDEN_BBR_BACKUP}: ${CONF}.bak"
@@ -191,30 +191,15 @@ mod_bbr() {
         ["kernel.printk"]="3 3 3 3"
     )
 
-    SYSCTL_TMP=$(mktemp)
+    SYSCTL_DROPIN="/etc/sysctl.d/99-wgshield.conf"
+    local dropin_tmp
+    dropin_tmp=$(mktemp)
     for PARAM in "${!SYSCTL_VALUES[@]}"; do
         VALUE="${SYSCTL_VALUES[$PARAM]}"
-        if [ "$(sysctl -n $PARAM 2>/dev/null || echo '')" != "$VALUE" ]; then
-            echo "$PARAM=$VALUE" | tee -a /etc/sysctl.conf
-            sysctl -w "$PARAM=$VALUE"
-            echo "$PARAM" >> "$SYSCTL_TMP"
-        fi
+        echo "$PARAM=$VALUE" >> "$dropin_tmp"
+        sysctl -w "$PARAM=$VALUE" >/dev/null 2>&1 || true
     done
-
-    if [ -s "$SYSCTL_TMP" ]; then
-        sed -i '/^$/d' /etc/sysctl.conf
-        while IFS= read -r PARAM; do
-            grep -v "^${PARAM}=" /etc/sysctl.conf > /etc/sysctl.conf.tmp 2>/dev/null || true
-            mv /etc/sysctl.conf.tmp /etc/sysctl.conf
-        done < "$SYSCTL_TMP"
-        for PARAM in "${!SYSCTL_VALUES[@]}"; do
-            VALUE="${SYSCTL_VALUES[$PARAM]}"
-            if grep -q "$PARAM" "$SYSCTL_TMP"; then
-                echo "$PARAM=$VALUE" | tee -a /etc/sysctl.conf
-            fi
-        done
-    fi
-    rm -f "$SYSCTL_TMP"
+    mv "$dropin_tmp" "$SYSCTL_DROPIN"
     log "${HARDEN_BBR_SUCCESS}"
 }
 
