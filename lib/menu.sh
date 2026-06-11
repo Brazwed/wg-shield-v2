@@ -285,16 +285,25 @@ show_install_progress() {
 
         # Show spinner with animation
         local pid
-        (
-            local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-            local i=0
-            while kill -0 $$ 2>/dev/null; do
-                printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${step}..."
-                i=$((i + 1))
-                sleep 0.1
-            done
-        ) &
-        pid=$!
+        local is_interactive=false
+        case "$step" in
+            "${MSG_COMP_DOCKER_ENGINE}") is_interactive=true ;;
+        esac
+
+        if $is_interactive; then
+            printf "  ${B}[●]${NC} ${step}...\n"
+        else
+            (
+                local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+                local i=0
+                while kill -0 $$ 2>/dev/null; do
+                    printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${step}..."
+                    i=$((i + 1))
+                    sleep 0.1
+                done
+            ) &
+            pid=$!
+        fi
 
         # Run the actual command (redirect output)
         case "$step" in
@@ -314,8 +323,10 @@ show_install_progress() {
         esac
 
         # Kill spinner and show checkmark
-        kill $pid 2>/dev/null
-        wait $pid 2>/dev/null
+        if ! $is_interactive; then
+            kill $pid 2>/dev/null
+            wait $pid 2>/dev/null
+        fi
         printf "\r  ${G}[✔]${NC} ${step}\n"
     done
 
