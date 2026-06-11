@@ -5,7 +5,7 @@ detect_firewall() {
     FW_ACTIVE=false
 
     if command -v ufw &>/dev/null; then
-        if ufw status 2>/dev/null | head -1 | grep -q "active"; then
+        if ufw status 2>/dev/null | head -1 | grep -qw "active"; then
             FW_TYPE="ufw"
             FW_ACTIVE=true
             local rules
