@@ -295,6 +295,14 @@ show_install_progress() {
             return 1
         fi
 
+        if [ "$step_rc" -ne 0 ] && [ "$step_id" != "docker" ] && ! has_docker; then
+            printf "\r  ${R}[✘]${NC} ${step}          \n"
+            echo ""
+            echo -e "  ${BD}${R}${MSG_DOCKER_REQUIRED:-Docker is required. Aborting.}${NC}"
+            echo ""
+            return 1
+        fi
+
         if [ "$step_rc" -eq 0 ]; then
             printf "\r  ${G}[✔]${NC} ${step}          \n"
         else
