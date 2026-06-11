@@ -9,6 +9,24 @@ VERSION="2.0"
 AUTHOR="Brazwed"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Bootstrap: if running without lib/ (curl | bash), clone repo and re-exec
+_WG_SHIELD_REPO="https://github.com/Brazwed/wg-shield-v2.git"
+_WG_SHIELD_DIR="/opt/wg-shield"
+if [ ! -d "${SCRIPT_DIR}/lib" ]; then
+    if [ "$(id -u)" -ne 0 ]; then
+        echo "Run as root: sudo bash $0" >&2; exit 1
+    fi
+    apt-get update -y >/dev/null 2>&1 || true
+    apt-get install -y git >/dev/null 2>&1 || true
+    if [ -d "$_WG_SHIELD_DIR/.git" ]; then
+        git -C "$_WG_SHIELD_DIR" pull --quiet || true
+    else
+        rm -rf "$_WG_SHIELD_DIR"
+        git clone --quiet "$_WG_SHIELD_REPO" "$_WG_SHIELD_DIR"
+    fi
+    exec bash "$_WG_SHIELD_DIR/wgshield.sh" "$@"
+fi
+
 # Flags
 AUTO_YES=false
 
