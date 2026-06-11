@@ -134,7 +134,9 @@ Muda runtime e estado do sistema, mas sem tocar em regras de firewall. Cada um e
 - [x] C3/F33: **Concluído** (f4c3066) — mod_firewall() respeita FW_TYPE; mock 9/9 PASS; UFW real pendente VPS+snapshot
 - [x] Firewall Detection Matrix: **Concluído** (3c0cc4c) — bug `grep -q "active"` corrigido para `grep -qw`; detect_firewall mock 12/12 PASS; mod_firewall/open_port mock 18/18 PASS
 - [x] C4/F07: **Concluído** (2d7d69e) — dns-abuse filter funcional; mod_dns FW_TYPE-aware; fail2ban-regex 5/5 PASS; mock 31/31 PASS
-- [ ] C5/F34: Próximo — depende de C1 estável (OK)
+- [x] C5/F34: **Concluído** (694b7b1) — IPv6 51821/tcp + 3000/tcp adicionados; UFW 3000/tcp; mock 22/22 PASS
+
+**Etapa 6 CONCLUÍDA** — todos os itens C1-C5 validados
 
 ### Checklist de segurança — obrigatório ANTES de começar
 

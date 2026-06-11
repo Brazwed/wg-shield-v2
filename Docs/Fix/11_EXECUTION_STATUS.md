@@ -59,7 +59,7 @@ Branch: `fix/execution-queue-round-1`
 | C2 | F03 | OK     | 19f35f1  | docker_firewall_present() preserva FORWARD; VPS kobold com Docker OK |
 | C3 | F33 | OK     | f4c3066  | mod_firewall() respeita FW_TYPE; mock 9/9 PASS; UFW real pendente VPS+snapshot |
 | C4 | F07 | OK     | 2d7d69e  | dns-abuse filter funcional; mod_dns FW_TYPE-aware; fail2ban-regex 5/5 PASS |
-| C5 | F34 | BLOQUEADO | —     | Depende de C1 estável                                                   |
+| C5 | F34 | OK     | 694b7b1  | IPv6 51821/tcp + 3000/tcp adicionados; UFW 3000/tcp; mock 22/22 PASS |
 
 ## Etapa 7 — Futuro/redesign
 
@@ -93,9 +93,11 @@ Branch: `fix/execution-queue-round-1`
 
 | Status     | Qtd |
 | ---------- | --- |
-| OK         | 22  |
+| OK         | 23  |
 | SKIP       | 1   |
 | PENDENTE   | 1   |
-| BLOQUEADO  | 13  |
+| BLOQUEADO  | 12  |
 
-**Progresso:** 23/36 achados endereçados (22 corrigidos + 1 no-op verificado)
+**Progresso:** 24/36 achados endereçados (23 corrigidos + 1 no-op verificado)
+
+**Etapa 6:** CONCLUÍDA — C1/C2/C3/C4/C5 todos OK

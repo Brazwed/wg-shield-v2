@@ -1,0 +1,54 @@
+=== M1: IPv6 port parity in mod_firewall_iptables() ===
+  PASS: IPv6 SSH
+  PASS: IPv6 51820/udp
+  PASS: IPv6 51821/tcp WG-Easy
+  PASS: IPv6 3000/tcp AdGuard
+  PASS: IPv4 51821/tcp present
+  PASS: Helper used (not raw ip6tables -A)
+
+=== M2: UFW port parity in mod_firewall_ufw() ===
+  PASS: UFW SSH
+  PASS: UFW WireGuard
+  PASS: UFW WG-Easy
+  PASS: UFW AdGuard 3000/tcp
+
+=== M3: open_port mock FW_TYPE=iptables ===
+  PASS: iptables 51821 via open_port
+  PASS: iptables 3000 via open_port
+  PASS: no ufw in iptables path
+
+=== M4: open_port mock FW_TYPE=ufw ===
+  PASS: ufw 51821
+  PASS: ufw 3000
+  PASS: no iptables in ufw path
+
+=== M5: open_port FW_TYPE=none ===
+  PASS: no iptables when none
+  PASS: no ufw when none
+
+=== M6: No raw -A INPUT, only helpers ===
+  PASS: no ip6tables -A INPUT in source
+  PASS: no iptables -A INPUT in source
+  PASS: ip6tables -P INPUT DROP (policy)
+
+=== M7: IPv4/IPv6 port parity table ===
+  IPv4 ports (ensure_iptables_input_rule):
+    "$SSH_PORT" -j ACCEPT
+    51820 -j ACCEPT
+    51821 -j ACCEPT
+    53 -m hashlimit \
+
+  IPv6 ports (ensure_ip6tables_input_rule):
+    "$SSH_PORT" -j ACCEPT
+    3000 -j ACCEPT
+    51820 -j ACCEPT
+    51821 -j ACCEPT
+
+  UFW rules:
+    ufw allow "${SSH_PORT}"/tcp comment "SSH" >/dev/null 2>&1 || true
+    ufw allow 3000/tcp comment "AdGuard" >/dev/null 2>&1 || true
+    ufw allow 51820/udp comment "WireGuard" >/dev/null 2>&1 || true
+    ufw allow 51821/tcp comment "WG-Easy" >/dev/null 2>&1 || true
+
+
+=== Results: 22 PASS, 0 FAIL ===
