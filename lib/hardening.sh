@@ -6,7 +6,13 @@ mod_unattended() {
     echo -e "  ${BD}${C}${HARDEN_UNATTENDED_MSG}${NC}"
     if ! dpkg -l | grep -qw unattended-upgrades; then
         DEBIAN_FRONTEND=noninteractive apt install -y unattended-upgrades
-        dpkg-reconfigure --priority=low unattended-upgrades
+    fi
+    mkdir -p /etc/apt/apt.conf.d
+    if ! grep -q '^APT::Periodic::Unattended-Upgrade "1"' /etc/apt/apt.conf.d/20auto-upgrades 2>/dev/null; then
+        cat > /etc/apt/apt.conf.d/20auto-upgrades <<'EOF'
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+EOF
     fi
     warn "${HARDEN_UNATTENDED_REBOOT_WARN}"
     sed -i 's|^.*Unattended-Upgrade::Automatic-Reboot .*|Unattended-Upgrade::Automatic-Reboot "true";|' /etc/apt/apt.conf.d/50unattended-upgrades
