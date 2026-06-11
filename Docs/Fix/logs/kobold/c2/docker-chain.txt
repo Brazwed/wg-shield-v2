@@ -1,0 +1,2 @@
+-N DOCKER
+-A DOCKER ! -i docker0 -o docker0 -j DROP

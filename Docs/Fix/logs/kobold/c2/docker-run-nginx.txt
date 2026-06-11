@@ -1,0 +1,31 @@
+Unable to find image 'nginx:alpine' locally
+alpine: Pulling from library/nginx
+6a0ac1617861: Pulling fs layer
+de1b677d8c00: Pulling fs layer
+94d083cf706a: Pulling fs layer
+e654dbbbb9e1: Pulling fs layer
+a5008f4a4b25: Pulling fs layer
+fbaed3f7fcbe: Pulling fs layer
+abaae85d1626: Pulling fs layer
+43f834d60d8a: Pulling fs layer
+de1b677d8c00: Download complete
+94d083cf706a: Download complete
+43f834d60d8a: Download complete
+e654dbbbb9e1: Download complete
+a5008f4a4b25: Download complete
+ab556c9e4280: Download complete
+abaae85d1626: Download complete
+2d8223aa4623: Download complete
+6a0ac1617861: Download complete
+6a0ac1617861: Pull complete
+abaae85d1626: Pull complete
+43f834d60d8a: Pull complete
+de1b677d8c00: Pull complete
+94d083cf706a: Pull complete
+e654dbbbb9e1: Pull complete
+fbaed3f7fcbe: Download complete
+a5008f4a4b25: Pull complete
+fbaed3f7fcbe: Pull complete
+Digest: sha256:8b1e78743a03dbb2c95171cc58639fef29abc8816598e27fb910ed2e621e589a
+Status: Downloaded newer image for nginx:alpine
+751b8bedd8369089c96731803d0de3b32823cb69d4f313dad29d3c06b64116ed

@@ -1,0 +1,11 @@
+=== C2 TEST START 2026-06-11T14:06:50+00:00 ===
+
+  [1m[0;36m=== Validando pré-requisitos ===[0m
+  [1m[0;36m=== Configurando Firewall (IPv4) ===[0m
+[1;33m[!][0m Docker ativo detectado — FORWARD DROP pulado para preservar containers
+  [1m[0;36m=== Firewall ip6tables (IPv6 Leak Blocking) ===[0m
+[1;33m[!][0m Docker ativo detectado — FORWARD DROP pulado para preservar containers
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-ip4tables save
+run-parts: executing /usr/share/netfilter-persistent/plugins.d/25-ip6tables save
+[0;32m[✔][0m Firewall IPv4 + IPv6 configurado
+=== C2 TEST END 2026-06-11T14:06:50+00:00 ===

@@ -1,0 +1,13 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0   896    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/1.1 200 OK
+Server: nginx/1.31.1
+Date: Thu, 11 Jun 2026 14:05:07 GMT
+Content-Type: text/html
+Content-Length: 896
+Last-Modified: Fri, 22 May 2026 13:47:05 GMT
+Connection: keep-alive
+ETag: "6a105e59-380"
+Accept-Ranges: bytes
+

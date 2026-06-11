@@ -56,7 +56,7 @@ Branch: `fix/execution-queue-round-1`
 | ID | Fxx | Status   | Commit | Observação                              |
 | -- | --- | -------- | ------ | --------------------------------------- |
 | C1 | F01 | OK     | 0c6a137  | ensure_iptables_input_rule insere ACCEPT antes de DROP; VPS kobold OK |
-| C2 | F03 | BLOQUEADO | —     | Precisa validar; exige VPS teste + VNC  |
+| C2 | F03 | OK     | 19f35f1  | docker_firewall_present() preserva FORWARD; VPS kobold com Docker OK |
 | C3 | F33 | BLOQUEADO | —     | Precisa validar; exige VPS teste + VNC  |
 | C4 | F07 | BLOQUEADO | —     | Depende de A3 (OK); exige VPS teste     |
 | C5 | F34 | BLOQUEADO | —     | Depende de C1 estável                   |
