@@ -396,7 +396,8 @@ toggle_dns_public() {
 }
 
 reset_wg_password() {
-    local dir="/opt/wg-easy"
+    local dir
+    dir=$(parse_comp "wg-easy" 7)
     local display="${MSG_COMP_WG_EASY}"
 
     if [ ! -d "$dir" ] || [ ! -f "$dir/.env" ]; then
