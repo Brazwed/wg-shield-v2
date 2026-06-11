@@ -24,7 +24,7 @@ if [ ! -d "${SCRIPT_DIR}/lib" ]; then
         rm -rf "$_WG_SHIELD_DIR"
         git clone --quiet "$_WG_SHIELD_REPO" "$_WG_SHIELD_DIR"
     fi
-    exec bash "$_WG_SHIELD_DIR/wgshield.sh" "$@"
+    exec bash "$_WG_SHIELD_DIR/wgshield.sh" "$@" </dev/tty
 fi
 
 # Flags
