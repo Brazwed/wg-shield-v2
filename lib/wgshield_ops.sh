@@ -69,6 +69,7 @@ WG_PORT_UDP=51820
 WG_PORT_TCP=51821
 WG_PASSWORD=${wg_pass}
 ENVEOF
+            chmod 600 "$dir/.env" 2>/dev/null || true
         fi
         chmod +x "$dir"/*.sh 2>/dev/null || true
         (cd "$dir" && docker compose up -d 2>&1) >/dev/null
@@ -162,6 +163,7 @@ WG_PORT_UDP=51820
 WG_PORT_TCP=51821
 WG_PASSWORD=${wg_pass}
 ENVEOF
+        chmod 600 "$dir/.env" 2>/dev/null || true
     fi
 
     chmod +x "$dir"/*.sh 2>/dev/null || true
@@ -451,6 +453,7 @@ WG_PORT_UDP=51820
 WG_PORT_TCP=51821
 WG_PASSWORD=${new_pass}
 ENVEOF
+    chmod 600 "$dir/.env" 2>/dev/null || true
 
     kill $pid 2>/dev/null
     wait $pid 2>/dev/null
