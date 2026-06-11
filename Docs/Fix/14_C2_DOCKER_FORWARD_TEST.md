@@ -30,7 +30,7 @@
 
 **lib/firewall.sh:**
 - Adicionado `docker_firewall_present()` — detecta Docker ativo ou chains Docker
-- Verifica: `docker` command + `systemctl is-active docker`, ou chains `DOCKER`/`DOCKER-USER`
+- Verifica: `docker` command + `systemctl is-active docker`, ou chains `DOCKER`/`DOCKER-USER`/`DOCKER-FORWARD`
 
 **lib/hardening.sh:**
 - `mod_firewall()`: `iptables -P FORWARD DROP` condicional — só aplica se Docker NÃO está presente
@@ -87,7 +87,7 @@ Se Docker não estivesse instalado, `iptables -P FORWARD DROP` seria aplicado no
 - C3/F33: mod_firewall() ignora FW_TYPE=ufw (não testado; UFW não instalado)
 - C4/F07: dns-abuse filter=empty (não alterado)
 - C5/F34: IPv6 sem porta 51821/tcp e 3000/tcp (não testado)
-- FORWARD DROP com Docker desinstalado: `docker_firewall_present` retorna false se Docker removido mas chains residuais existirem — edge case menor
+- Docker removido com chains residuais: coberto por `docker_firewall_present()`, pois a função verifica chains `DOCKER`, `DOCKER-USER` e `DOCKER-FORWARD`. O risco remanescente seria apenas um ambiente sem Docker ativo e sem chains Docker, onde `FORWARD DROP` é esperado.
 
 ## Próximo passo recomendado
 
