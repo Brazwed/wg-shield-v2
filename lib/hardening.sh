@@ -237,13 +237,17 @@ mod_bbr() {
 mod_limits() {
     echo ""
     echo -e "  ${BD}${C}${HARDEN_LIMITS_MSG}${NC}"
-    if ! grep -q "nofile 65535" /etc/security/limits.conf; then
-        echo "* soft nofile 65535" | tee -a /etc/security/limits.conf
-        echo "* hard nofile 65535" | tee -a /etc/security/limits.conf
-        log "${HARDEN_LIMITS_SUCCESS}"
-    else
+    if grep -q "nofile 65535" /etc/security/limits.conf; then
         info "${HARDEN_LIMITS_ALREADY}"
+        if [ "$(ulimit -n 2>/dev/null)" != "65535" ]; then
+            ulimit -n 65535 2>/dev/null || warn "${HARDEN_LIMITS_SESSION_WARN}"
+        fi
+        return 0
     fi
+    echo "* soft nofile 65535" | tee -a /etc/security/limits.conf
+    echo "* hard nofile 65535" | tee -a /etc/security/limits.conf
+    ulimit -n 65535 2>/dev/null || warn "${HARDEN_LIMITS_SESSION_WARN}"
+    log "${HARDEN_LIMITS_SUCCESS}"
 }
 
 mod_logs() {

@@ -379,6 +379,7 @@ HARDEN_BBR_SUCCESS="BBR + Network tuning aplicado"
 HARDEN_LIMITS_MSG="=== File Limits (Definitivo ulimit) ==="
 HARDEN_LIMITS_ALREADY="File limits já configurado"
 HARDEN_LIMITS_SUCCESS="File limits aplicado (nofile 65535)"
+HARDEN_LIMITS_SESSION_WARN="File limits aplicado no sistema, mas a sessão atual requer relogin para efeito completo"
 
 HARDEN_LOGS_MSG="=== Otimizando Logs (Mantendo 200MB) ==="
 HARDEN_LOGS_ALREADY="Logs já otimizados"

@@ -215,33 +215,17 @@ show_install_progress() {
     local SEP='━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
     local title="🛡️  WG-Shield v2.0"
     local subtitle=""
-    local steps=()
+    local step_ids=()
+    local step_labels=()
 
     if [ "$mode" = "new_vps" ]; then
         subtitle="${MSG_TOTAL_ARMOR_FULL_STACK}"
-        steps=(
-            "${MSG_COMP_DOCKER_ENGINE}"
-            "${WIZARD_MOD_1}"
-            "${WIZARD_MOD_2}"
-            "${WIZARD_MOD_3}"
-            "${WIZARD_MOD_4}"
-            "${WIZARD_MOD_5}"
-            "${WIZARD_MOD_6}"
-            "${WIZARD_MOD_7}"
-            "${WIZARD_MOD_8}"
-            "${WIZARD_MOD_9}"
-            "${MSG_SEPARATOR}"
-            "${MSG_COMP_WG_EASY}"
-            "${MSG_COMP_ADGUARD}"
-            "${MSG_COMP_UNBOUND}"
-        )
+        step_ids=("docker" "unattended" "fail2ban" "swap" "memory" "firewall" "bbr" "limits" "logs" "dns" "---" "wg-easy" "adguard" "unbound")
+        step_labels=("${MSG_COMP_DOCKER_ENGINE}" "${WIZARD_MOD_1}" "${WIZARD_MOD_2}" "${WIZARD_MOD_3}" "${WIZARD_MOD_4}" "${WIZARD_MOD_5}" "${WIZARD_MOD_6}" "${WIZARD_MOD_7}" "${WIZARD_MOD_8}" "${WIZARD_MOD_9}" "${MSG_SEPARATOR}" "${MSG_COMP_WG_EASY}" "${MSG_COMP_ADGUARD}" "${MSG_COMP_UNBOUND}")
     elif [ "$mode" = "existing_vps" ]; then
         subtitle="${MSG_INST_EXISTING_SUBTITLE}"
-        steps=(
-            "${MSG_COMP_WG_EASY}"
-            "${MSG_COMP_ADGUARD}"
-            "${MSG_COMP_UNBOUND}"
-        )
+        step_ids=("wg-easy" "adguard" "unbound")
+        step_labels=("${MSG_COMP_WG_EASY}" "${MSG_COMP_ADGUARD}" "${MSG_COMP_UNBOUND}")
     fi
 
     clear
@@ -252,30 +236,33 @@ show_install_progress() {
     echo -e "  ${BD}${C}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 
-    for step in "${steps[@]}"; do
-        if [ "$step" = "---" ]; then
+    for idx in "${!step_ids[@]}"; do
+        local step_id="${step_ids[$idx]}"
+        local step="${step_labels[$idx]}"
+
+        if [ "$step_id" = "---" ]; then
             echo ""
             echo -e "  ${BD}${SEP}${NC}"
             echo ""
             continue
         fi
 
-        # Check if step is already done
+        # Check if step is already done using stable ID
         local already_done=false
-        case "$step" in
-            "${MSG_COMP_DOCKER_ENGINE}") has_docker && already_done=true ;;
-            "${WIZARD_MOD_1}") check_module_status unattended && already_done=true ;;
-            "${WIZARD_MOD_2}") check_module_status fail2ban && already_done=true ;;
-            "${WIZARD_MOD_3}") check_module_status swap && already_done=true ;;
-            "${WIZARD_MOD_4}") check_module_status memory && already_done=true ;;
-            "${WIZARD_MOD_5}") check_module_status firewall && already_done=true ;;
-            "${WIZARD_MOD_6}") check_module_status bbr && already_done=true ;;
-            "${WIZARD_MOD_7}") check_module_status limits && already_done=true ;;
-            "${WIZARD_MOD_8}") check_module_status logs && already_done=true ;;
-            "${WIZARD_MOD_9}") check_module_status dns && already_done=true ;;
-            "${MSG_COMP_WG_EASY}") get_container_status wg-easy | grep -q "running" && already_done=true ;;
-            "${MSG_COMP_ADGUARD}") get_container_status adguard | grep -q "running" && already_done=true ;;
-            "${MSG_COMP_UNBOUND}") get_container_status unbound | grep -q "running" && already_done=true ;;
+        case "$step_id" in
+            docker)     has_docker && already_done=true ;;
+            unattended) check_module_status unattended && already_done=true ;;
+            fail2ban)   check_module_status fail2ban && already_done=true ;;
+            swap)       check_module_status swap && already_done=true ;;
+            memory)     check_module_status memory && already_done=true ;;
+            firewall)   check_module_status firewall && already_done=true ;;
+            bbr)        check_module_status bbr && already_done=true ;;
+            limits)     check_module_status limits && already_done=true ;;
+            logs)       check_module_status logs && already_done=true ;;
+            dns)        check_module_status dns && already_done=true ;;
+            wg-easy)    get_container_status wg-easy | grep -q "running" && already_done=true ;;
+            adguard)    get_container_status adguard | grep -q "running" && already_done=true ;;
+            unbound)    get_container_status unbound | grep -q "running" && already_done=true ;;
         esac
 
         if $already_done; then
@@ -283,40 +270,29 @@ show_install_progress() {
             continue
         fi
 
-        # Show spinner with animation
-        local pid
-        (
-            local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-            local i=0
-            while kill -0 $$ 2>/dev/null; do
-                printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${step}..."
-                i=$((i + 1))
-                sleep 0.1
-            done
-        ) &
-        pid=$!
-
-        # Run the actual command (redirect output)
-        case "$step" in
-            "${MSG_COMP_DOCKER_ENGINE}") has_docker || install_docker ;;
-            "${WIZARD_MOD_1}") mod_unattended >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_2}") mod_fail2ban >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_3}") mod_swap >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_4}") mod_memory >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_5}") mod_firewall >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_6}") mod_bbr >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_7}") mod_limits >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_8}") mod_logs >/dev/null 2>&1 ;;
-            "${WIZARD_MOD_9}") mod_dns >/dev/null 2>&1 ;;
-            "${MSG_COMP_WG_EASY}") install_comp wg-easy true ;;
-            "${MSG_COMP_ADGUARD}") install_comp adguard true ;;
-            "${MSG_COMP_UNBOUND}") install_comp unbound true ;;
+        # Run module with spinner
+        local step_rc=0
+        case "$step_id" in
+            docker)     has_docker || { install_docker; step_rc=$?; } ;;
+            unattended) mod_unattended >/dev/null 2>&1 || step_rc=$? ;;
+            fail2ban)   mod_fail2ban >/dev/null 2>&1 || step_rc=$? ;;
+            swap)       mod_swap >/dev/null 2>&1 || step_rc=$? ;;
+            memory)     mod_memory >/dev/null 2>&1 || step_rc=$? ;;
+            firewall)   mod_firewall >/dev/null 2>&1 || step_rc=$? ;;
+            bbr)        mod_bbr >/dev/null 2>&1 || step_rc=$? ;;
+            limits)     mod_limits >/dev/null 2>&1 || step_rc=$? ;;
+            logs)       mod_logs >/dev/null 2>&1 || step_rc=$? ;;
+            dns)        mod_dns >/dev/null 2>&1 || step_rc=$? ;;
+            wg-easy)    install_comp wg-easy true || step_rc=$? ;;
+            adguard)    install_comp adguard true || step_rc=$? ;;
+            unbound)    install_comp unbound true || step_rc=$? ;;
         esac
 
-        # Kill spinner and show checkmark
-        kill $pid 2>/dev/null
-        wait $pid 2>/dev/null
-        printf "\r  ${G}[✔]${NC} ${step}\n"
+        if [ "$step_rc" -eq 0 ]; then
+            printf "\r  ${G}[✔]${NC} ${step}          \n"
+        else
+            printf "\r  ${R}[✘]${NC} ${step}          \n"
+        fi
     done
 
     echo ""
@@ -570,13 +546,13 @@ submenu_manage() {
             d) comp_name=$(select_installed_comp "${PROMPT_WHICH_CONTAINER_STOP}") || continue
                stop_comp "$comp_name"; pause ;;
             c)
-                local running_names=()
+                local has_running=false
                 for n in "${names[@]}"; do
                     local st
                     st=$(get_container_status "$(parse_comp "$n" 6)")
-                    [ "$st" = "running" ] && running_names+=("$n")
+                    [ "$st" = "running" ] && has_running=true
                 done
-                if [ ${#running_names[@]} -eq 0 ]; then
+                if ! $has_running; then
                     warn "${MSG_NO_CONTAINER_RUNNING} ${MSG_STATUS_RUNNING}"; pause; continue
                 fi
                 comp_name=$(select_installed_comp "${PROMPT_WHICH_CONTAINER_CONNECT}") || continue

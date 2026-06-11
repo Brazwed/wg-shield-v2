@@ -17,6 +17,57 @@ spinner() {
     printf "\r  ${G}[✔]${NC} ${msg}... OK!          \n"
 }
 
+run_with_spinner() {
+    local message="$1"
+    shift
+
+    "$@" &
+    local cmd_pid=$!
+
+    local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    local i=0
+
+    while kill -0 "$cmd_pid" 2>/dev/null; do
+        printf "\r  ${B}[●]${NC} ${chars:$((i % ${#chars})):1} ${message}..."
+        i=$((i + 1))
+        sleep 0.1
+    done
+
+    wait "$cmd_pid"
+    local rc=$?
+
+    if [ "$rc" -eq 0 ]; then
+        printf "\r  ${G}[✔]${NC} ${message}          \n"
+    else
+        printf "\r  ${R}[✘]${NC} ${message} (exit %s)          \n" "$rc"
+    fi
+    return "$rc"
+}
+
+spinner_wait() {
+    local message="$1"
+    local cmd_pid="$2"
+
+    local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+    local i=0
+
+    while kill -0 "$cmd_pid" 2>/dev/null; do
+        printf "\r  ${B}[●]${NC} ${chars:$((i % ${#chars})):1} ${message}..."
+        i=$((i + 1))
+        sleep 0.1
+    done
+
+    wait "$cmd_pid"
+    local rc=$?
+
+    if [ "$rc" -eq 0 ]; then
+        printf "\r  ${G}[✔]${NC} ${message}          \n"
+    else
+        printf "\r  ${R}[✘]${NC} ${message} (exit %s)          \n" "$rc"
+    fi
+    return "$rc"
+}
+
 flush_stdin() {
     while read -r -t 0 2>/dev/null; do read -r -t 0.1 2>/dev/null; done
 }
@@ -30,7 +81,21 @@ pause()   { if [ "$AUTO_YES" = "true" ]; then return; fi; read -rp "  ${PROMPT_E
 has_docker() { command -v docker &>/dev/null && docker info &>/dev/null; }
 
 get_container_status() {
-    docker ps --format '{{.Names}}' 2>/dev/null | grep -q "^${1}$" && echo "running" || echo "stopped"
+    if ! has_docker; then
+        echo "unknown"
+        return 1
+    fi
+    local running
+    running=$(docker inspect -f '{{.State.Running}}' "$1" 2>/dev/null) || {
+        echo "missing"
+        return 1
+    }
+    if [ "$running" = "true" ]; then
+        echo "running"
+        return 0
+    fi
+    echo "stopped"
+    return 1
 }
 
 parse_comp() {
@@ -87,11 +152,22 @@ check_module_status() {
         fail2ban)    systemctl is-active --quiet fail2ban 2>/dev/null ;;
         swap)        swapon --show 2>/dev/null | grep -q swapfile ;;
         memory)      [ "$(sysctl -n vm.swappiness 2>/dev/null)" = "10" ] ;;
-        firewall)    iptables -L INPUT -n 2>/dev/null | grep -q "DROP" ;;
+        firewall)    _check_firewall_status ;;
         bbr)         sysctl -n net.ipv4.tcp_congestion_control 2>/dev/null | grep -q bbr ;;
         limits)      grep -q "nofile 65535" /etc/security/limits.conf 2>/dev/null ;;
         logs)        grep -q "SystemMaxUse=200M" /etc/systemd/journald.conf 2>/dev/null ;;
         dns)         iptables -L INPUT -n 2>/dev/null | grep -q "limit:" ;;
         *)           return 1 ;;
     esac
+}
+
+_check_firewall_status() {
+    if [ "${FW_TYPE}" = "ufw" ]; then
+        ufw status 2>/dev/null | head -1 | grep -qw "active" && return 0
+        return 1
+    fi
+    iptables -L INPUT -n 2>/dev/null | grep -q "DROP\|REJECT" || return 1
+    iptables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null || return 1
+    iptables -C INPUT -p tcp --dport "${SSH_PORT:-22}" -j ACCEPT 2>/dev/null || return 1
+    return 0
 }
