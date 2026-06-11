@@ -25,13 +25,29 @@ create_backup() {
             docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}' > "$bk_dir/docker-images.txt" 2>/dev/null || true
         fi
 
+        # Hardening configs
+        mkdir -p "$bk_dir/system" "$bk_dir/fail2ban" "$bk_dir/apt"
+
+        for f in /etc/sysctl.conf /etc/sysctl.d/99-wgshield.conf /etc/security/limits.conf /etc/systemd/journald.conf /etc/fstab; do
+            [ -f "$f" ] && cp "$f" "$bk_dir/system/" 2>/dev/null || true
+        done
+
+        if [ -d /etc/fail2ban ]; then
+            cp -a /etc/fail2ban/* "$bk_dir/fail2ban/" 2>/dev/null || true
+        fi
+
+        for f in /etc/apt/apt.conf.d/20auto-upgrades /etc/apt/apt.conf.d/50unattended-upgrades; do
+            [ -f "$f" ] && cp "$f" "$bk_dir/apt/" 2>/dev/null || true
+        done
+
         cat > "$bk_dir/meta.json" << EOF
 {
   "timestamp": "${timestamp}",
   "target": "vps",
   "reason": "${reason}",
   "hostname": "$(hostname)",
-  "date": "$(date -Iseconds)"
+  "date": "$(date -Iseconds)",
+  "hardening": true
 }
 EOF
 
