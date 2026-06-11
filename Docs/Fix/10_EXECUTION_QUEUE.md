@@ -127,6 +127,14 @@ Muda runtime e estado do sistema, mas sem tocar em regras de firewall. Cada um e
 
 **NUNCA sem VPS de teste com console VNC/KVM.**
 
+### Status Etapa 6
+
+- [x] C1/F01: **Concluído** (0c6a137) — validado em VPS kobold com cron safety
+- [ ] C2/F03: Próximo — exige VPS com Docker para validar
+- [ ] C3/F33: Bloqueado — depende de C2
+- [ ] C4/F07: Bloqueado — depende de A3 (OK), mas precisa de teste dedicado
+- [ ] C5/F34: Bloqueado — depende de C1 estável (OK)
+
 ### Checklist de segurança — obrigatório ANTES de começar
 
 - [ ] VPS de teste provisionada (não produção)
@@ -139,7 +147,7 @@ Muda runtime e estado do sistema, mas sem tocar em regras de firewall. Cada um e
 
 | Ordem | ID | Fxx | Nível | Arquivo | Ação | Testes | Commit sugerido | Observação |
 |-------|-----|------|-------|---------|------|--------|-----------------|------------|
-| 21 | C1 | F01 | Alto (P0) | lib/hardening.sh:99-107 | Inserir regras ACCEPT com `-I INPUT` ANTES de `-P INPUT DROP` | T30, T34, T35 | `fix: insert iptables ACCEPT rules before DROP policy` | P0 imediato. SSH lockout em crash. |
+| 21 | C1 | F01 | ~~Alto (P0)~~ OK | lib/hardening.sh:99-107 **→ firewall.sh** | Inserir regras ACCEPT com `-I INPUT` ANTES de `-P INPUT DROP` | T30, T34, T35 | `fix: insert iptables ACCEPT rules before DROP policy` | **Concluído commit 0c6a137.** Helper `ensure_iptables_input_rule` em firewall.sh. Regras duplicadas Oracle (-m state) vs WG-Shield (-m conntrack) são inofensivas. |
 | 22 | C2 | F03 | Alto (P0, precisa validar) | lib/hardening.sh:100 | Resolver FORWARD DROP vs Docker: DOCKER-USER ou FORWARD específicas | T31, T32, T36 | `fix: resolve FORWARD DROP conflict with Docker` | Precisa validar com T31/T32 PRIMEIRO. Depende de C1. |
 | 23 | C3 | F33 | Alto (P1, precisa validar) | lib/hardening.sh:81-136 | Se FW_TYPE=ufw, usar `ufw allow` em vez de iptables raw | T33, T37 | `fix: respect FW_TYPE in mod_firewall` | Precisa validar com T33 PRIMEIRO. Depende de C1+C2. |
 | 24 | C4 | F07 | Alto (P1) | lib/hardening.sh:256 + novo filter | Criar `/etc/fail2ban/filter.d/dns-abuse.conf` + `filter = dns-abuse` | T38, T49 | `fix: add fail2ban dns-abuse filter` | Depende de A3 (mod_dns_remove funcional). |

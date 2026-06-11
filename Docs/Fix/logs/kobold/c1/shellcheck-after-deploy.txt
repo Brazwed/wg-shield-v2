@@ -1,0 +1,26 @@
+
+In lib/hardening.sh line 1:
+# lib/hardening.sh - Módulos de hardening (do script.sh original)
+
+
+In lib/hardening.sh line 236:
+        if ! iptables -C ${RULE:3} 2>/dev/null; then
+                         ^-------^ SC2086 (info): Double quote to prevent globbing and word splitting.
+
+Did you mean:
+        if ! iptables -C "${RULE:3}" 2>/dev/null; then
+
+
+In lib/hardening.sh line 237:
+            iptables $RULE
+                     ^---^ SC2086 (info): Double quote to prevent globbing and word splitting.
+
+Did you mean:
+            iptables "$RULE"
+
+
+In lib/firewall.sh line 1:
+# lib/firewall.sh - Gerenciamento de firewall (UFW/iptables)
+
+For more information:
+  https://www.shellcheck.net/wiki/SC2086 -- Double quote to prevent globbing ...

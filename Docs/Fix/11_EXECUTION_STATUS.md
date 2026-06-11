@@ -55,7 +55,7 @@ Branch: `fix/execution-queue-round-1`
 
 | ID | Fxx | Status   | Commit | Observação                              |
 | -- | --- | -------- | ------ | --------------------------------------- |
-| C1 | F01 | BLOQUEADO | —     | P0; exige VPS teste + VNC               |
+| C1 | F01 | OK     | 0c6a137  | ensure_iptables_input_rule insere ACCEPT antes de DROP; VPS kobold OK |
 | C2 | F03 | BLOQUEADO | —     | Precisa validar; exige VPS teste + VNC  |
 | C3 | F33 | BLOQUEADO | —     | Precisa validar; exige VPS teste + VNC  |
 | C4 | F07 | BLOQUEADO | —     | Depende de A3 (OK); exige VPS teste     |
