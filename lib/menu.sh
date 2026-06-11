@@ -117,8 +117,7 @@ submenu_install() {
                     show_already_installed "new_vps"
                     continue
                 fi
-                confirm "${PROMPT_CONFIRM}" || continue
-                AUTO_YES=true run_install_animation "new_vps" ;;
+                run_install_animation "new_vps" ;;
             2)
                 submenu_wizard ;;
             3)

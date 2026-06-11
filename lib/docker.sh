@@ -69,9 +69,7 @@ install_docker() {
         return 0
     fi
 
-    if [ "$AUTO_YES" != "true" ]; then
-        confirm "${PROMPT_CONFIRM}" || return 1
-    fi
+    confirm "${PROMPT_CONFIRM}" || return 1
 
     create_backup "vps" "before-docker-install"
 
