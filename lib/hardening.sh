@@ -108,43 +108,28 @@ mod_firewall() {
 
     echo -e "  ${BD}${C}${HARDEN_FIREWALL_IP4}${NC}"
 
-    RULES=(
-        "-A INPUT -i lo -j ACCEPT"
-        "-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
-        "-A INPUT -p icmp -j ACCEPT"
-        "-A INPUT -p tcp --dport $SSH_PORT -j ACCEPT"
-        "-A INPUT -p udp --dport 51820 -j ACCEPT"
-        "-A INPUT -p tcp --dport 51821 -j ACCEPT"
-    )
+    ensure_iptables_input_rule -i lo -j ACCEPT
+    ensure_iptables_input_rule -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    ensure_iptables_input_rule -p icmp -j ACCEPT
+    ensure_iptables_input_rule -p tcp --dport "$SSH_PORT" -j ACCEPT
+    ensure_iptables_input_rule -p udp --dport 51820 -j ACCEPT
+    ensure_iptables_input_rule -p tcp --dport 51821 -j ACCEPT
 
     iptables -P INPUT DROP
     iptables -P FORWARD DROP
     iptables -P OUTPUT ACCEPT
 
-    for RULE in "${RULES[@]}"; do
-        if ! iptables -C ${RULE:3} 2>/dev/null; then
-            iptables $RULE
-        fi
-    done
-
     echo -e "  ${BD}${C}${HARDEN_FIREWALL_IP6}${NC}"
+
+    ensure_ip6tables_input_rule -i lo -j ACCEPT
+    ensure_ip6tables_input_rule -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+    ensure_ip6tables_input_rule -p ipv6-icmp -j ACCEPT
+    ensure_ip6tables_input_rule -p tcp --dport "$SSH_PORT" -j ACCEPT
+    ensure_ip6tables_input_rule -p udp --dport 51820 -j ACCEPT
+
     ip6tables -P INPUT DROP
     ip6tables -P FORWARD DROP
     ip6tables -P OUTPUT ACCEPT
-
-    RULES_IPV6=(
-        "-A INPUT -i lo -j ACCEPT"
-        "-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT"
-        "-A INPUT -p ipv6-icmp -j ACCEPT"
-        "-A INPUT -p tcp --dport $SSH_PORT -j ACCEPT"
-        "-A INPUT -p udp --dport 51820 -j ACCEPT"
-    )
-
-    for RULE in "${RULES_IPV6[@]}"; do
-        if ! ip6tables -C ${RULE:3} 2>/dev/null; then
-            ip6tables $RULE
-        fi
-    done
 
     if ! dpkg -l | grep -qw iptables-persistent; then
         DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
