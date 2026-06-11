@@ -40,16 +40,16 @@ Branch: `fix/execution-queue-round-1`
 | B4      | F36       | OK     | ba27472  | `df --output=avail` checa 2300MB antes de dd; i18n `HARDEN_SWAP_NOSPACE`   |
 | B8      | F37       | OK     | 4947689  | `warn` com i18n `HARDEN_UNATTENDED_REBOOT_WARN` antes dos sed              |
 | B9      | F38       | OK     | bfafa31  | `"dns"` + `${WIZARD_MOD_9}` adicionados ao arrays em show_already_installed  |
-| B10-VAL | F22       | OK     | 4e95d76  | Bug confirmado via VPS kobold; `20auto-upgrades` agora criado explicitamente; `dpkg-reconfigure` removido |
+| B10-VAL | F22       | OK     | 4e95d76  | Bug confirmado via VPS kobold; `20auto-upgrades` criado explicitamente; `dpkg-reconfigure` removido |
 
 ## Etapa 5 — Alto runtime sem firewall pesado
 
-| ID | Fxx      | Status   | Commit | Observação                        |
-| -- | -------- | -------- | ------ | --------------------------------- |
-| B3 | F06      | PENDENTE | —      | Migrar sysctl.d drop-in          |
-| B5 | F04      | PENDENTE | —      | Wizard aplica módulos            |
-| B6 | F09+F16  | PENDENTE | —      | Consumir _pubports              |
-| B7 | F08      | PENDENTE | —      | Expandir backup VPS             |
+| ID | Fxx      | Status | Commit   | Observação                                                                |
+| -- | -------- | ------ | -------- | ------------------------------------------------------------------------- |
+| B7 | F08      | OK     | 61398a6  | Backup VPS inclui system/, fail2ban/, apt/ com configs de hardening         |
+| B3 | F06      | OK     | c22ffc2  | sysctl.conf→99-wgshield.conf drop-in; lógica grep-v/frágil removida       |
+| B5 | F04      | OK     | cd8e00a  | Wizard [A] Apply chama mod_* e install_comp; i18n MSG_WIZARD_APPLY        |
+| B6 | F09+F16 | OK     | 0c5eec4  | `pubports` consumido em install_comp; portas públicas abertas via open_port |
 
 ## Etapa 6 — Firewall e segurança pesada
 
@@ -82,10 +82,9 @@ Branch: `fix/execution-queue-round-1`
 
 | Item           | Tipo               | Status   | Observação                                                                  |
 | -------------- | ------------------ | -------- | --------------------------------------------------------------------------- |
-| Shellcheck     | ferramenta         | PENDENTE | Não instalado localmente; recomendado antes da Etapa 5                       |
+| Shellcheck     | ferramenta         | OK       | v0.11.0 instalado via binary em ~/.local/bin; relata SC2086 pré-existente   |
 | LOG_RESTORED   | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19    |
 | A10/F31        | no-op verificado   | OK       | README já correto; bug real corrigido em A2                                 |
-| B10-VAL / F22  | validação+fix      | OK       | Bug confirmado via VPS kobold; `20auto-upgrades` criado explicitamente      |
 
 ---
 
@@ -93,9 +92,9 @@ Branch: `fix/execution-queue-round-1`
 
 | Status     | Qtd |
 | ---------- | --- |
-| OK         | 16  |
+| OK         | 20  |
 | SKIP       | 1   |
-| PENDENTE   | 5   |
+| PENDENTE   | 1   |
 | BLOQUEADO  | 15  |
 
-**Progresso:** 17/36 achados endereçados (16 corrigidos + 1 no-op verificado)
+**Progresso:** 21/36 achados endereçados (20 corrigidos + 1 no-op verificado)
