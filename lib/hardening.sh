@@ -191,7 +191,7 @@ mod_bbr() {
     echo ""
     echo -e "  ${BD}${C}${HARDEN_BBR_MSG}${NC}"
     for CONF in /etc/sysctl.conf /etc/sysctl.d/99-wgshield.conf /etc/security/limits.conf /etc/systemd/journald.conf; do
-        if [ ! -f "${CONF}.bak" ]; then
+        if [ -f "$CONF" ] && [ ! -f "${CONF}.bak" ]; then
             cp "$CONF" "${CONF}.bak"
             echo "    [✔] ${HARDEN_BBR_BACKUP}: ${CONF}.bak"
         fi
