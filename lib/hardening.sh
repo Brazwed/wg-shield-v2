@@ -55,7 +55,7 @@ mod_swap() {
             dd if=/dev/zero of=$SWAPFILE bs=1M count=2048 status=progress
             chmod 600 $SWAPFILE
             mkswap $SWAPFILE
-            echo "$SWAPFILE none swap sw 0 0" | tee -a /etc/fstab
+            grep -q "^$SWAPFILE " /etc/fstab || echo "$SWAPFILE none swap sw 0 0" >> /etc/fstab
         fi
         swapon $SWAPFILE
         log "${HARDEN_SWAP_SUCCESS}"
