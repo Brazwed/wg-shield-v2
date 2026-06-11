@@ -292,7 +292,6 @@ show_install_progress() {
             echo ""
             echo -e "  ${BD}${R}${MSG_DOCKER_REQUIRED:-Docker is required. Aborting.}${NC}"
             echo ""
-            pause
             return 1
         fi
 
