@@ -298,7 +298,7 @@ show_install_progress() {
 
         # Run the actual command (redirect output)
         case "$step" in
-            "${MSG_COMP_DOCKER_ENGINE}") has_docker || install_docker >/dev/null 2>&1 ;;
+            "${MSG_COMP_DOCKER_ENGINE}") has_docker || install_docker ;;
             "${WIZARD_MOD_1}") mod_unattended >/dev/null 2>&1 ;;
             "${WIZARD_MOD_2}") mod_fail2ban >/dev/null 2>&1 ;;
             "${WIZARD_MOD_3}") mod_swap >/dev/null 2>&1 ;;
@@ -475,7 +475,7 @@ submenu_wizard() {
                     local cval="${!cont_var}"
                     if [ "$cval" -eq 1 ]; then
                         if ! get_container_status "$cont_name" | grep -q "running"; then
-                            install_comp "$cont_name" true 2>/dev/null || true
+                            install_comp "$cont_name" true || true
                         fi
                     fi
                 done
