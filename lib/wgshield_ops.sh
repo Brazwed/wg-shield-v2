@@ -381,55 +381,26 @@ toggle_dns_public() {
     echo ""
 
     if check_module_status dns; then
-        # DNS is currently public, ask to close
         echo -e "  Status ${MSG_DNS_PUBLIC}: ${G}${MSG_DNS_PUBLIC}${NC} (${MSG_DNS_OPEN_PORT})"
         echo ""
         confirm "  ${MSG_DNS_CLOSE_PORT} [Y/n]" || return 0
 
-        # Show spinner while removing
-        local pid
-        (
-            local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-            local i=0
-            while kill -0 $$ 2>/dev/null; do
-                printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${MSG_DNS_CLOSING}..."
-                i=$((i + 1))
-                sleep 0.1
-            done
-        ) &
-        pid=$!
-
-        mod_dns_remove >/dev/null 2>&1
-
-        kill $pid 2>/dev/null
-        wait $pid 2>/dev/null
+        _toggle_dns_close &
+        spinner_wait "${MSG_DNS_CLOSING}" $! || true
         printf "\r  ${G}[✔]${NC} ${MSG_DNS_PRIVATE} - ${MSG_DNS_CLOSE_PORT}\n"
     else
-        # DNS is currently private, ask to open
         echo -e "  Status ${MSG_DNS_PRIVATE}: ${MSG_DNS_PRIVATE} (${MSG_INFO_ADGUARD_SETUP})"
         echo ""
         confirm "  ${MSG_DNS_OPEN_PORT} [Y/n]" || return 0
 
-        # Show spinner while opening
-        local pid
-        (
-            local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-            local i=0
-            while kill -0 $$ 2>/dev/null; do
-                printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${MSG_DNS_OPENING}..."
-                i=$((i + 1))
-                sleep 0.1
-            done
-        ) &
-        pid=$!
-
-        mod_dns >/dev/null 2>&1
-
-        kill $pid 2>/dev/null
-        wait $pid 2>/dev/null
+        _toggle_dns_open &
+        spinner_wait "${MSG_DNS_OPENING}" $! || true
         printf "\r  ${G}[✔]${NC} ${MSG_DNS_PUBLIC} - ${MSG_DNS_OPEN_PORT}\n"
     fi
 }
+
+_toggle_dns_close() { mod_dns_remove >/dev/null 2>&1; }
+_toggle_dns_open()  { mod_dns >/dev/null 2>&1; }
 
 reset_wg_password() {
     local dir
@@ -445,7 +416,6 @@ reset_wg_password() {
     echo -e "  ${BD}${C}${MSG_RESET_PASSWORD_TITLE} ${display}${NC}"
     echo ""
 
-    # Show current password
     local current_pass
     current_pass=$(grep -m1 "^WG_PASSWORD=" "$dir/.env" 2>/dev/null | cut -d= -f2)
     if [ -n "$current_pass" ]; then
@@ -455,52 +425,26 @@ reset_wg_password() {
 
     confirm "  ${MSG_GENERATING_PASSWORD} [Y/n]" || return 0
 
-    # Show spinner while generating
-    local pid
-    (
-        local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-        local i=0
-        while kill -0 $$ 2>/dev/null; do
-            printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${MSG_GENERATING_PASSWORD}"
-            i=$((i + 1))
-            sleep 0.1
-        done
-    ) &
-    pid=$!
-
     local new_pass wg_host password_hash
     new_pass=$(openssl rand -hex 8)
     wg_host=$(curl -s4 ifconfig.me 2>/dev/null || echo "YOUR_IP")
     password_hash=$(generate_wg_password_hash "$new_pass") || { err "${WG_PASSWORD_HASH_FAILED:-Failed to generate password hash}"; return 1; }
     write_wg_easy_env "$dir" "$wg_host" "$new_pass" "$password_hash"
 
-    kill $pid 2>/dev/null
-    wait $pid 2>/dev/null
     printf "\r  ${G}[✔]${NC} ${MSG_RESET_NEW_PASSWORD}\n"
 
-    # Restart container
-    local pid2
-    (
-        local chars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
-        local i=0
-        while kill -0 $$ 2>/dev/null; do
-            printf "\r  ${B}[●]${NC} ${chars:$((i % 10)):1} ${MSG_RESET_RESTARTING}"
-            i=$((i + 1))
-            sleep 0.1
-        done
-    ) &
-    pid2=$!
-
-    # Restart container with down/up to re-read .env
-    (cd "$dir" && docker_compose down --timeout 10 && docker_compose up -d 2>&1) >/dev/null
+    _reset_wg_restart "$dir" &
+    spinner_wait "${MSG_RESET_RESTARTING}" $! || true
     sleep 3
 
-    kill $pid2 2>/dev/null
-    wait $pid2 2>/dev/null
     printf "\r  ${G}[✔]${NC} ${MSG_RESET_CONTAINER_RESTARTED}\n"
 
     echo ""
     echo -e "  ${BD}${C}${MSG_RESET_NEW_CREDS}${NC}"
     echo "    ${MSG_RESET_URL}  http://${wg_host}:${MSG_INFO_WG_EASY_PORT}"
     echo -e "    ${MSG_NEW_PASSWORD} ${G}${BD}${new_pass}${NC}"
+}
+
+_reset_wg_restart() {
+    (cd "$1" && docker_compose down --timeout 10 && docker_compose up -d 2>&1) >/dev/null
 }
