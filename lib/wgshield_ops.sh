@@ -3,7 +3,7 @@
 install_comp() {
     local comp="$1"
     local silent="${2:-false}"
-    local display default_ports repo container dir ports
+    local display default_ports pubports repo container dir ports
 
     if ! comp_info_valid "$comp"; then
         err "${ERR_UNKNOWN_COMP}: $comp"
@@ -17,6 +17,7 @@ install_comp() {
         if [ "$_name" = "$comp" ]; then
             display="$_display"
             default_ports="$_ports"
+            pubports="$_pubports"
             repo="$_repo"
             container="$_container"
             dir="$_dir"
@@ -116,7 +117,15 @@ ENVEOF
         for port_item in "${PORT_ARRAY[@]}"; do
             open_port "$port_item" "$display"
         done
-        log "${LOG_PORT_OPENED} $ports"
+        if [ -n "$pubports" ]; then
+            IFS=',' read -ra PUBPORT_ARRAY <<< "$pubports"
+            for port_item in "${PUBPORT_ARRAY[@]}"; do
+                open_port "$port_item" "$display"
+            done
+        fi
+        local all_opened="$ports"
+        [ -n "$pubports" ] && all_opened="$ports, $pubports"
+        log "${LOG_PORT_OPENED} $all_opened"
     fi
 
     local avail_kb
