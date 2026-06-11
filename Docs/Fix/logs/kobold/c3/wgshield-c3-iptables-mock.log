@@ -1,0 +1,21 @@
+iptables -C INPUT -i lo -j ACCEPT
+iptables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -C INPUT -p icmp -j ACCEPT
+iptables -C INPUT -p tcp --dport 22 -j ACCEPT
+iptables -C INPUT -p udp --dport 51820 -j ACCEPT
+iptables -C INPUT -p tcp --dport 51821 -j ACCEPT
+iptables -P INPUT DROP
+iptables -S DOCKER
+iptables -P OUTPUT ACCEPT
+ip6tables -C INPUT -i lo -j ACCEPT
+ip6tables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+ip6tables -C INPUT -p ipv6-icmp -j ACCEPT
+ip6tables -C INPUT -p tcp --dport 22 -j ACCEPT
+ip6tables -C INPUT -p udp --dport 51820 -j ACCEPT
+ip6tables -P INPUT DROP
+iptables -S DOCKER
+ip6tables -P OUTPUT ACCEPT
+dpkg -l
+apt install -y iptables-persistent
+netfilter-persistent save
+netfilter-persistent enable

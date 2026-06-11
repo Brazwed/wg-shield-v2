@@ -131,9 +131,8 @@ Muda runtime e estado do sistema, mas sem tocar em regras de firewall. Cada um e
 
 - [x] C1/F01: **Concluído** (0c6a137) — validado em VPS kobold com cron safety
 - [x] C2/F03: **Concluído** (19f35f1) — validado em VPS kobold com Docker + nginx
-- [ ] C3/F33: Próximo — exige VPS com UFW para validar
-- [ ] C3/F33: Bloqueado — depende de C2
-- [ ] C4/F07: Bloqueado — depende de A3 (OK), mas precisa de teste dedicado
+- [x] C3/F33: **Concluído** (f4c3066) — mod_firewall() respeita FW_TYPE; mock 9/9 PASS; UFW real pendente VPS+snapshot
+- [ ] C4/F07: Próximo — depende de A3 (OK), mas precisa de teste dedicado
 - [ ] C5/F34: Bloqueado — depende de C1 estável (OK)
 
 ### Checklist de segurança — obrigatório ANTES de começar
@@ -150,7 +149,7 @@ Muda runtime e estado do sistema, mas sem tocar em regras de firewall. Cada um e
 |-------|-----|------|-------|---------|------|--------|-----------------|------------|
 | 21 | C1 | F01 | ~~Alto (P0)~~ OK | lib/hardening.sh:99-107 **→ firewall.sh** | Inserir regras ACCEPT com `-I INPUT` ANTES de `-P INPUT DROP` | T30, T34, T35 | `fix: insert iptables ACCEPT rules before DROP policy` | **Concluído commit 0c6a137.** Helper `ensure_iptables_input_rule` em firewall.sh. Regras duplicadas Oracle (-m state) vs WG-Shield (-m conntrack) são inofensivas. |
 | 22 | C2 | F03 | ~~Alto (P0, precisa validar)~~ OK | lib/hardening.sh:100 **→ firewall.sh** | Resolver FORWARD DROP vs Docker: DOCKER-USER ou FORWARD específicas | T31, T32, T36 | `fix: preserve Docker forwarding when applying firewall` | **Concluído commit 19f35f1.** Helper `docker_firewall_present()` em firewall.sh. FORWARD DROP pulado quando Docker ativo. |
-| 23 | C3 | F33 | Alto (P1, precisa validar) | lib/hardening.sh:81-136 | Se FW_TYPE=ufw, usar `ufw allow` em vez de iptables raw | T33, T37 | `fix: respect FW_TYPE in mod_firewall` | Precisa validar com T33 PRIMEIRO. Depende de C1+C2. |
+| 23 | C3 | F33 | ~~Alto (P1, precisa validar)~~ OK | lib/hardening.sh:102-185 | Se FW_TYPE=ufw, usar `ufw allow` em vez de iptables raw | T33, T37 | `fix: respect FW_TYPE in mod_firewall` | **Concluído commit f4c3066.** `mod_firewall_iptables()` + `mod_firewall_ufw()` + dispatch via `case FW_TYPE`. Mock 9/9 PASS. UFW real pendente VPS+snapshot. |
 | 24 | C4 | F07 | Alto (P1) | lib/hardening.sh:256 + novo filter | Criar `/etc/fail2ban/filter.d/dns-abuse.conf` + `filter = dns-abuse` | T38, T49 | `fix: add fail2ban dns-abuse filter` | Depende de A3 (mod_dns_remove funcional). |
 | 25 | C5 | F34 | Médio (P2) | lib/hardening.sh:114-120 | Adicionar 51821/tcp e 3000/tcp às regras IPv6 | T39 | `fix: add missing IPv6 firewall rules` | Depende de C1 estável. |
 

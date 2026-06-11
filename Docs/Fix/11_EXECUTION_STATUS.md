@@ -57,7 +57,7 @@ Branch: `fix/execution-queue-round-1`
 | -- | --- | -------- | ------ | --------------------------------------- |
 | C1 | F01 | OK     | 0c6a137  | ensure_iptables_input_rule insere ACCEPT antes de DROP; VPS kobold OK |
 | C2 | F03 | OK     | 19f35f1  | docker_firewall_present() preserva FORWARD; VPS kobold com Docker OK |
-| C3 | F33 | BLOQUEADO | —     | Precisa validar; exige VPS teste + VNC  |
+| C3 | F33 | OK     | f4c3066  | mod_firewall() respeita FW_TYPE; mock 9/9 PASS; UFW real pendente VPS+snapshot |
 | C4 | F07 | BLOQUEADO | —     | Depende de A3 (OK); exige VPS teste     |
 | C5 | F34 | BLOQUEADO | —     | Depende de C1 estável                   |
 
@@ -92,9 +92,9 @@ Branch: `fix/execution-queue-round-1`
 
 | Status     | Qtd |
 | ---------- | --- |
-| OK         | 20  |
+| OK         | 21  |
 | SKIP       | 1   |
 | PENDENTE   | 1   |
-| BLOQUEADO  | 15  |
+| BLOQUEADO  | 14  |
 
-**Progresso:** 21/36 achados endereçados (20 corrigidos + 1 no-op verificado)
+**Progresso:** 22/36 achados endereçados (21 corrigidos + 1 no-op verificado)
