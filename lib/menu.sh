@@ -229,6 +229,7 @@ show_install_progress() {
             "${WIZARD_MOD_6}"
             "${WIZARD_MOD_7}"
             "${WIZARD_MOD_8}"
+            "${WIZARD_MOD_9}"
             "${MSG_SEPARATOR}"
             "${MSG_COMP_WG_EASY}"
             "${MSG_COMP_ADGUARD}"
