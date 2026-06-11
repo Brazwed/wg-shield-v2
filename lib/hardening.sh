@@ -129,6 +129,8 @@ mod_firewall_iptables() {
     ensure_ip6tables_input_rule -p ipv6-icmp -j ACCEPT
     ensure_ip6tables_input_rule -p tcp --dport "$SSH_PORT" -j ACCEPT
     ensure_ip6tables_input_rule -p udp --dport 51820 -j ACCEPT
+    ensure_ip6tables_input_rule -p tcp --dport 51821 -j ACCEPT
+    ensure_ip6tables_input_rule -p tcp --dport 3000 -j ACCEPT
 
     ip6tables -P INPUT DROP
     if docker_firewall_present; then
@@ -157,6 +159,7 @@ mod_firewall_ufw() {
     ufw allow "${SSH_PORT}"/tcp comment "SSH" >/dev/null 2>&1 || true
     ufw allow 51820/udp comment "WireGuard" >/dev/null 2>&1 || true
     ufw allow 51821/tcp comment "WG-Easy" >/dev/null 2>&1 || true
+    ufw allow 3000/tcp comment "AdGuard" >/dev/null 2>&1 || true
 
     echo "y" | ufw enable >/dev/null 2>&1 || true
 
