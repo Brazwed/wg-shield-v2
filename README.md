@@ -18,12 +18,12 @@
 ## 📋 Installation
 
 ```bash
-# Clone
-git clone https://github.com/Brazwed/wg-shield-v2.git /opt/wg-shield
+# One-liner (VPS nova)
+curl -sL https://raw.githubusercontent.com/Brazwed/wg-shield-v2/main/wgshield.sh | sudo bash
 
-# Executar
-cd /opt/wg-shield
-sudo ./wgshield.sh
+# Ou manual
+git clone https://github.com/Brazwed/wg-shield-v2.git /opt/wg-shield
+cd /opt/wg-shield && sudo ./wgshield.sh
 ```
 
 ---
@@ -60,7 +60,7 @@ sudo ./wgshield.sh lang en
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   wg-easy    │───▶│   AdGuard    │───▶│   Unbound    │
+│   wg-easy    │───▶│   AdGuard     │───▶│   Unbound    │
 │  10.8.1.2    │     │  10.8.1.3    │     │  10.8.1.4    │
 │  VPN + Panel │     │  DNS Filter  │     │  Recursive   │
 └──────────────┘     └──────────────┘     └──────────────┘
