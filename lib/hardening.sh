@@ -52,6 +52,12 @@ mod_swap() {
     SWAPFILE="/swapfile"
     if ! swapon --show | grep -q "$SWAPFILE"; then
         if [ ! -f "$SWAPFILE" ]; then
+            local avail_mb
+            avail_mb=$(df --output=avail / | tail -1 | tr -d ' ')
+            if [ "$avail_mb" -lt 2300 ]; then
+                warn "${HARDEN_SWAP_NOSPACE}"
+                return 1
+            fi
             dd if=/dev/zero of=$SWAPFILE bs=1M count=2048 status=progress
             chmod 600 $SWAPFILE
             mkswap $SWAPFILE

@@ -342,6 +342,7 @@ HARDEN_FAIL2BAN_ALREADY="Fail2Ban already installed and running"
 HARDEN_FAIL2BAN_SUCCESS="Fail2Ban configured with jails"
 
 HARDEN_SWAP_MSG="=== 2GB Swap (Created with dd) ==="
+HARDEN_SWAP_NOSPACE="Insufficient disk space for swap (required: 2.3GB+)"
 HARDEN_SWAP_ALREADY="Swap already active"
 HARDEN_SWAP_SUCCESS="2GB Swap created and activated"
 

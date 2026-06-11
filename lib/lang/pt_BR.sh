@@ -342,6 +342,7 @@ HARDEN_FAIL2BAN_ALREADY="Fail2Ban já instalado e rodando"
 HARDEN_FAIL2BAN_SUCCESS="Fail2Ban configurado com jails"
 
 HARDEN_SWAP_MSG="=== 2GB Swap (Criado com dd) ==="
+HARDEN_SWAP_NOSPACE="Espaço insuficiente para criar swap (necessário: 2.3GB+)"
 HARDEN_SWAP_ALREADY="Swap já ativo"
 HARDEN_SWAP_SUCCESS="Swap de 2GB criado e ativado"
 
