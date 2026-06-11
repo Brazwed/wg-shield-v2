@@ -377,6 +377,9 @@ HARDEN_DNS_JAIL_ALREADY="Jail DNS abuse já configurada"
 HARDEN_DNS_SUCCESS="DNS protection aplicada (30 req/s per IP)"
 HARDEN_DNS_RATE="Teste: dig @{host} google.com"
 
+HARDEN_DNS_REMOVE_MSG="=== Removendo DNS Protection (fechando porta 53) ==="
+HARDEN_DNS_REMOVE_SUCCESS="DNS protection removida (porta 53 fechada)"
+
 # ─── Pre-flight ─────────────────────────────────────────────
 PREFLIGHT_CHECKING_NETWORK="Verificando conectividade de rede..."
 PREFLIGHT_DETECTING_SSH="Detectando porta SSH..."

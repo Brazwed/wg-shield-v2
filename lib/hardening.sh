@@ -274,7 +274,7 @@ EOF
 
 mod_dns_remove() {
     echo ""
-    echo -e "  ${BD}${C}=== Removendo DNS Protection (fechando porta 53) ===${NC}"
+    echo -e "  ${BD}${C}${HARDEN_DNS_REMOVE_MSG}${NC}"
     echo ""
 
     # Remove iptables hashlimit rules for DNS
@@ -304,7 +304,7 @@ mod_dns_remove() {
     fi
 
     netfilter-persistent save
-    log "DNS protection removida (porta 53 fechada)"
+    log "${HARDEN_DNS_REMOVE_SUCCESS}"
 }
 
 # Note: run_total_armor and run_wizard removed as dead code
