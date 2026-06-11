@@ -1,0 +1,16 @@
+=== BEFORE ===
+kill -0 $$ in spinners: 5 occurrences (menu.sh:291, wgshield_ops.sh:394,418,463,486)
+running_names: 3 occurrences (menu.sh:573,577,579)
+get_container_status: only returned "running"/"stopped"
+check_module_status firewall: iptables -L INPUT -n | grep -q "DROP"
+mod_limits: no check_module_status, no session runtime fix
+step comparison: case "$step" matched i18n strings
+
+=== AFTER ===
+kill -0 $$: 0 occurrences
+running_names: 0 occurrences
+get_container_status: returns running/stopped/missing/unknown
+check_module_status firewall: _check_firewall_status with conntrack+SSH accept checks
+mod_limits: uses check_module_status pattern + ulimit best-effort + session warning
+step comparison: uses step_id (docker, unattended, fail2ban, etc.)
+run_with_spinner + spinner_wait: 2 new helpers in utils.sh
