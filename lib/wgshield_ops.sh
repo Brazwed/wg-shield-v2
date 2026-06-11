@@ -80,6 +80,8 @@ install_comp() {
         fi
         if ! detect_vps_state >/dev/null 2>&1; then
             warn "${ERR_PORT_CONFLICT}"
+            detect_vps_state
+            confirm "${PROMPT_CONTINUE:-Continue?}" || return 1
         fi
         create_backup "vps" "before-install-${comp}" >/dev/null 2>&1
         if ! has_docker; then
