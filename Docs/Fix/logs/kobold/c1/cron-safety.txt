@@ -1,0 +1,1 @@
+* * * * * root iptables-restore < /tmp/wgshield-c1-logs/iptables-restore-safe.v4; ip6tables-restore < /tmp/wgshield-c1-logs/ip6tables-restore-safe.v6

@@ -1,0 +1,51 @@
+iptables -C INPUT -i lo -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -i lo -j ACCEPT
+iptables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -C INPUT -p icmp -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -p icmp -j ACCEPT
+iptables -C INPUT -p tcp --dport 22 -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -p tcp --dport 22 -j ACCEPT
+iptables -C INPUT -p udp --dport 51820 -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -p udp --dport 51820 -j ACCEPT
+iptables -C INPUT -p tcp --dport 51821 -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -p tcp --dport 51821 -j ACCEPT
+iptables -P INPUT DROP
+systemctl is-active --quiet docker
+iptables -S DOCKER
+iptables -S DOCKER-USER
+iptables -S DOCKER-FORWARD
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+ip6tables -C INPUT -i lo -j ACCEPT
+ip6tables -L INPUT --line-numbers -n
+ip6tables -A INPUT -i lo -j ACCEPT
+ip6tables -C INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+ip6tables -L INPUT --line-numbers -n
+ip6tables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+ip6tables -C INPUT -p ipv6-icmp -j ACCEPT
+ip6tables -L INPUT --line-numbers -n
+ip6tables -A INPUT -p ipv6-icmp -j ACCEPT
+ip6tables -C INPUT -p tcp --dport 22 -j ACCEPT
+ip6tables -L INPUT --line-numbers -n
+ip6tables -A INPUT -p tcp --dport 22 -j ACCEPT
+ip6tables -C INPUT -p udp --dport 51820 -j ACCEPT
+ip6tables -L INPUT --line-numbers -n
+ip6tables -A INPUT -p udp --dport 51820 -j ACCEPT
+ip6tables -P INPUT DROP
+systemctl is-active --quiet docker
+iptables -S DOCKER
+iptables -S DOCKER-USER
+iptables -S DOCKER-FORWARD
+ip6tables -P FORWARD DROP
+ip6tables -P OUTPUT ACCEPT
+dpkg -l
+apt install -y iptables-persistent
+netfilter-persistent save
+netfilter-persistent enable

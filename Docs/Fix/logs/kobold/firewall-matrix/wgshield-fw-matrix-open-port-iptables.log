@@ -1,0 +1,3 @@
+iptables -C INPUT -p tcp --dport 12345 -j ACCEPT
+iptables -L INPUT --line-numbers -n
+iptables -I INPUT 1 -p tcp --dport 12345 -j ACCEPT

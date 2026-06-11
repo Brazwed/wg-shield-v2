@@ -19,7 +19,7 @@
 
 ```bash
 # Clone
-git clone https://github.com/Brazwed/WG-Shield-v2.git /opt/wg-shield
+git clone https://github.com/Brazwed/wg-shield-v2.git /opt/wg-shield
 
 # Executar
 cd /opt/wg-shield

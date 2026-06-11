@@ -1,0 +1,1 @@
+ls: cannot access '/etc/cron.d/wgshield-c2-iptables-safety': No such file or directory

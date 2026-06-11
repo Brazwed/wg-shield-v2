@@ -36,7 +36,6 @@ FW_TYPE="none"
 FW_ACTIVE=false
 
 SSH_PORT=22
-PUBLIC_DNS=0
 
 # Load modules (order matters: utils first, then others)
 source "$SCRIPT_DIR/lib/utils.sh"

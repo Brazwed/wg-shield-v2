@@ -3,7 +3,7 @@
 install_comp() {
     local comp="$1"
     local silent="${2:-false}"
-    local display default_ports repo container dir ports
+    local display default_ports pubports repo container dir ports
 
     if ! comp_info_valid "$comp"; then
         err "${ERR_UNKNOWN_COMP}: $comp"
@@ -17,6 +17,7 @@ install_comp() {
         if [ "$_name" = "$comp" ]; then
             display="$_display"
             default_ports="$_ports"
+            pubports="$_pubports"
             repo="$_repo"
             container="$_container"
             dir="$_dir"
@@ -69,6 +70,7 @@ WG_PORT_UDP=51820
 WG_PORT_TCP=51821
 WG_PASSWORD=${wg_pass}
 ENVEOF
+            chmod 600 "$dir/.env" 2>/dev/null || true
         fi
         chmod +x "$dir"/*.sh 2>/dev/null || true
         (cd "$dir" && docker compose up -d 2>&1) >/dev/null
@@ -115,7 +117,15 @@ ENVEOF
         for port_item in "${PORT_ARRAY[@]}"; do
             open_port "$port_item" "$display"
         done
-        log "${LOG_PORT_OPENED} $ports"
+        if [ -n "$pubports" ]; then
+            IFS=',' read -ra PUBPORT_ARRAY <<< "$pubports"
+            for port_item in "${PUBPORT_ARRAY[@]}"; do
+                open_port "$port_item" "$display"
+            done
+        fi
+        local all_opened="$ports"
+        [ -n "$pubports" ] && all_opened="$ports, $pubports"
+        log "${LOG_PORT_OPENED} $all_opened"
     fi
 
     local avail_kb
@@ -162,6 +172,7 @@ WG_PORT_UDP=51820
 WG_PORT_TCP=51821
 WG_PASSWORD=${wg_pass}
 ENVEOF
+        chmod 600 "$dir/.env" 2>/dev/null || true
     fi
 
     chmod +x "$dir"/*.sh 2>/dev/null || true
@@ -396,7 +407,8 @@ toggle_dns_public() {
 }
 
 reset_wg_password() {
-    local dir="/opt/wg-easy"
+    local dir
+    dir=$(parse_comp "wg-easy" 7)
     local display="${MSG_COMP_WG_EASY}"
 
     if [ ! -d "$dir" ] || [ ! -f "$dir/.env" ]; then
@@ -450,6 +462,7 @@ WG_PORT_UDP=51820
 WG_PORT_TCP=51821
 WG_PASSWORD=${new_pass}
 ENVEOF
+    chmod 600 "$dir/.env" 2>/dev/null || true
 
     kill $pid 2>/dev/null
     wait $pid 2>/dev/null

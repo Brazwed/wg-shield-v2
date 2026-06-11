@@ -1,5 +1,39 @@
 # lib/firewall.sh - Gerenciamento de firewall (UFW/iptables)
 
+ensure_iptables_input_rule() {
+    if iptables -C INPUT "$@" 2>/dev/null; then
+        return 0
+    fi
+    local reject_line
+    reject_line="$(iptables -L INPUT --line-numbers -n 2>/dev/null | awk '/REJECT|DROP/ {print $1; exit}')"
+    if [[ -n "$reject_line" && "$reject_line" =~ ^[0-9]+$ ]]; then
+        iptables -I INPUT "$reject_line" "$@"
+    else
+        iptables -A INPUT "$@"
+    fi
+}
+
+ensure_ip6tables_input_rule() {
+    if ip6tables -C INPUT "$@" 2>/dev/null; then
+        return 0
+    fi
+    local reject_line
+    reject_line="$(ip6tables -L INPUT --line-numbers -n 2>/dev/null | awk '/REJECT|DROP/ {print $1; exit}')"
+    if [[ -n "$reject_line" && "$reject_line" =~ ^[0-9]+$ ]]; then
+        ip6tables -I INPUT "$reject_line" "$@"
+    else
+        ip6tables -A INPUT "$@"
+    fi
+}
+
+docker_firewall_present() {
+    command -v docker >/dev/null 2>&1 && systemctl is-active --quiet docker 2>/dev/null && return 0
+    iptables -S DOCKER >/dev/null 2>&1 && return 0
+    iptables -S DOCKER-USER >/dev/null 2>&1 && return 0
+    iptables -S DOCKER-FORWARD >/dev/null 2>&1 && return 0
+    return 1
+}
+
 ask_firewall_choice() {
     echo ""
 
@@ -21,7 +55,7 @@ ask_firewall_choice() {
                     warn "${MSG_FW_FAIL_CONFIG}"; return 1
                 fi
                 ufw default allow outgoing >/dev/null 2>&1 || true
-                ufw allow ${SSH_PORT}/tcp comment "${MSG_FW_SSH_COMMENT}" >/dev/null 2>&1 || true
+                ufw allow "${SSH_PORT}"/tcp comment "${MSG_FW_SSH_COMMENT}" >/dev/null 2>&1 || true
                 if ! ufw --force enable >/dev/null 2>&1; then
                     warn "${MSG_FW_FAIL_ENABLE}"; return 1
                 fi
@@ -30,8 +64,8 @@ ask_firewall_choice() {
                 ;;
             2)
                 FW_TYPE="iptables"; FW_ACTIVE=true
-                iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT 2>/dev/null || true
-                iptables -A INPUT -p tcp --dport $SSH_PORT -j ACCEPT 2>/dev/null || true
+                ensure_iptables_input_rule -m state --state ESTABLISHED,RELATED -j ACCEPT
+                ensure_iptables_input_rule -p tcp --dport "$SSH_PORT" -j ACCEPT
                 log "${MSG_FW_IPTABLES_SET}"
                 ;;
             *)
@@ -74,6 +108,6 @@ open_port() {
     if [ "$FW_TYPE" = "ufw" ]; then
         ufw allow "$port_num/$protocol" comment "$comment" >/dev/null 2>&1 || warn "${MSG_FW_FAIL_OPEN_UFW}"
     elif [ "$FW_TYPE" = "iptables" ]; then
-        iptables -A INPUT -p "$protocol" --dport "$port_num" -j ACCEPT 2>/dev/null || warn "${MSG_FW_FAIL_OPEN_IPTABLES}"
+        ensure_iptables_input_rule -p "$protocol" --dport "$port_num" -j ACCEPT
     fi
 }

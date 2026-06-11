@@ -145,8 +145,8 @@ show_already_installed() {
 
     # Show hardening modules
     echo -e "  ${BD}${MSG_DETECT_SYSTEM}${NC}"
-    local mods=("unattended" "fail2ban" "swap" "memory" "firewall" "bbr" "limits" "logs")
-    local names=("${WIZARD_MOD_1}" "${WIZARD_MOD_2}" "${WIZARD_MOD_3}" "${WIZARD_MOD_4}" "${WIZARD_MOD_5}" "${WIZARD_MOD_6}" "${WIZARD_MOD_7}" "${WIZARD_MOD_8}")
+    local mods=("unattended" "fail2ban" "swap" "memory" "firewall" "bbr" "limits" "logs" "dns")
+    local names=("${WIZARD_MOD_1}" "${WIZARD_MOD_2}" "${WIZARD_MOD_3}" "${WIZARD_MOD_4}" "${WIZARD_MOD_5}" "${WIZARD_MOD_6}" "${WIZARD_MOD_7}" "${WIZARD_MOD_8}" "${WIZARD_MOD_9}")
     local all_ok=true
     for i in "${!mods[@]}"; do
         if check_module_status "${mods[$i]}"; then
@@ -229,6 +229,7 @@ show_install_progress() {
             "${WIZARD_MOD_6}"
             "${WIZARD_MOD_7}"
             "${WIZARD_MOD_8}"
+            "${WIZARD_MOD_9}"
             "${MSG_SEPARATOR}"
             "${MSG_COMP_WG_EASY}"
             "${MSG_COMP_ADGUARD}"
@@ -407,6 +408,7 @@ submenu_wizard() {
         echo -e "    [c] $cc_icon  ${MSG_INST_UNBOUND}"
         echo -e "    [d] $cd_icon  ${MSG_INST_FULL_STACK}"
         echo ""
+        echo -e "    ${BD}${MSG_WIZARD_APPLY}${NC}"
         echo "    [0] ← ${MSG_MENU_VOLTAR_MAIN}"
         echo ""
 
@@ -445,6 +447,40 @@ submenu_wizard() {
                     contd=1; conta=1; contb=1; contc=1
                     echo -e "  ${G}[✔]${NC} ${MSG_COMP_FULL_STACK} ${MSG_SELECTED}"
                 fi
+                pause ;;
+            A)
+                echo ""
+                echo -e "  ${BD}${MSG_WIZARD_APPLYING}${NC}"
+                confirm "${PROMPT_CONFIRM}" || continue
+                echo ""
+                local mod_funcs=("mod_unattended" "mod_fail2ban" "mod_swap" "mod_memory" "mod_firewall" "mod_bbr" "mod_limits" "mod_logs" "mod_dns")
+                for i in 1 2 3 4 5 6 7 8 9; do
+                    local varname="${states[$((i-1))]}"
+                    local val="${!varname}"
+                    if [ "$val" -eq 1 ]; then
+                        local mod_name="${mod_names[$((i-1))]}"
+                        if ! check_module_status "${mod_funcs[$((i-1))#mod_}"; then
+                            echo -e "  ${G}[✔]${NC} $mod_name"
+                            "${mod_funcs[$((i-1))]}" >/dev/null 2>&1 || true
+                        fi
+                    fi
+                done
+                for i in a b c; do
+                    local cont_var
+                    case "$i" in
+                        a) cont_var="conta"; cont_name="wg-easy" ;;
+                        b) cont_var="contb"; cont_name="adguard" ;;
+                        c) cont_var="contc"; cont_name="unbound" ;;
+                    esac
+                    local cval="${!cont_var}"
+                    if [ "$cval" -eq 1 ]; then
+                        if ! get_container_status "$cont_name" | grep -q "running"; then
+                            install_comp "$cont_name" true 2>/dev/null || true
+                        fi
+                    fi
+                done
+                echo ""
+                log "${LOG_INSTALL_COMPLETE}"
                 pause ;;
             0)
                 log "${LOG_WIZARD_COMPLETE}"
