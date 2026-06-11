@@ -1,0 +1,1 @@
+ufw allow 12345/tcp comment Test

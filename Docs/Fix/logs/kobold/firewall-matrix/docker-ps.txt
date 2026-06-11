@@ -1,0 +1,2 @@
+CONTAINER ID   IMAGE          COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+751b8bedd836   nginx:alpine   "/docker-entrypoint.…"   21 minutes ago   Up 21 minutes   0.0.0.0:18080->80/tcp, [::]:18080->80/tcp   wgshield-c2-nginx

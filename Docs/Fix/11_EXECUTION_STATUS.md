@@ -85,6 +85,7 @@ Branch: `fix/execution-queue-round-1`
 | Shellcheck     | ferramenta         | OK       | v0.11.0 instalado via binary em ~/.local/bin; relata SC2086 pré-existente   |
 | LOG_RESTORED   | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19    |
 | A10/F31        | no-op verificado   | OK       | README já correto; bug real corrigido em A2                                 |
+| Firewall Matrix| validação          | OK       | Detecção UFW/iptables/none validada; bug grep -qw corrigido; UFW real pendente |
 
 ---
 
