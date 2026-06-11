@@ -68,11 +68,19 @@ mod_memory() {
     echo ""
     echo -e "  ${BD}${C}${HARDEN_MEMORY_MSG}${NC}"
     if [ "$(sysctl -n vm.swappiness 2>/dev/null)" != "10" ]; then
-        echo "vm.swappiness=10" | tee -a /etc/sysctl.conf
+        if grep -q "^vm.swappiness=" /etc/sysctl.conf; then
+            sed -i 's/^vm.swappiness=.*/vm.swappiness=10/' /etc/sysctl.conf
+        else
+            echo "vm.swappiness=10" >> /etc/sysctl.conf
+        fi
         sysctl -w vm.swappiness=10
     fi
     if [ "$(sysctl -n vm.vfs_cache_pressure 2>/dev/null)" != "50" ]; then
-        echo "vm.vfs_cache_pressure=50" | tee -a /etc/sysctl.conf
+        if grep -q "^vm.vfs_cache_pressure=" /etc/sysctl.conf; then
+            sed -i 's/^vm.vfs_cache_pressure=.*/vm.vfs_cache_pressure=50/' /etc/sysctl.conf
+        else
+            echo "vm.vfs_cache_pressure=50" >> /etc/sysctl.conf
+        fi
         sysctl -w vm.vfs_cache_pressure=50
     fi
     log "${HARDEN_MEMORY_SUCCESS}"
