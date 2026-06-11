@@ -297,8 +297,10 @@ mod_dns_remove() {
     # Remove fail2ban DNS abuse jail
     if [ -f /etc/fail2ban/jail.local ]; then
         if grep -q "\[dns-abuse\]" /etc/fail2ban/jail.local; then
-            # Remove the dns-abuse section from jail.local
-            sed -i '/^\[dns-abuse\]/,/^\[/ { /^\[dns-abuse\]/d; /^\[/!d; }' /etc/fail2ban/jail.local
+            local jail_tmp
+            jail_tmp=$(mktemp)
+            awk '/^\[dns-abuse\]/{skip=1; next} /^\[/{skip=0} !skip' /etc/fail2ban/jail.local > "$jail_tmp"
+            mv "$jail_tmp" /etc/fail2ban/jail.local
             systemctl restart fail2ban
         fi
     fi
