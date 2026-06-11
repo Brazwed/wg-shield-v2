@@ -16,7 +16,6 @@ if [ ! -d "${SCRIPT_DIR}/lib" ]; then
     if [ "$(id -u)" -ne 0 ]; then
         echo "Run as root: sudo bash $0" >&2; exit 1
     fi
-    cd / 2>/dev/null || cd /tmp 2>/dev/null || true
     apt-get update -y >/dev/null 2>&1 || true
     apt-get install -y git >/dev/null 2>&1 || true
     if [ -d "$_WG_SHIELD_DIR/.git" ]; then
