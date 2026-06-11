@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-ip6tables -P INPUT ACCEPT
-ip6tables -P FORWARD ACCEPT

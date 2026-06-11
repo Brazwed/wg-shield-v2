@@ -1,3 +1,0 @@
-Chain OUTPUT (policy ACCEPT 8735 packets, 4130K bytes)
-num   pkts bytes target     prot opt in     out     source               destination         
-1      844 67734 InstanceServices  0    --  *      *       0.0.0.0/0            169.254.0.0/16      

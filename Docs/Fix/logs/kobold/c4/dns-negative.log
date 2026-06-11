@@ -1,5 +1,0 @@
-[1:0] info: 127.0.0.1 localhost-query.com. A IN
-[1:0] info: ::1 localhost-ipv6.com. AAAA IN
-unbound[1]: start of service
-[1:0] notice: init module 0
-some random log line

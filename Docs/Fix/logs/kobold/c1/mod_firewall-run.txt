@@ -1,9 +1,0 @@
-=== C1 TEST START 2026-06-11T13:59:19+00:00 ===
-
-  [1m[0;36m=== Validando pré-requisitos ===[0m
-  [1m[0;36m=== Configurando Firewall (IPv4) ===[0m
-  [1m[0;36m=== Firewall ip6tables (IPv6 Leak Blocking) ===[0m
-run-parts: executing /usr/share/netfilter-persistent/plugins.d/15-ip4tables save
-run-parts: executing /usr/share/netfilter-persistent/plugins.d/25-ip6tables save
-[0;32m[✔][0m Firewall IPv4 + IPv6 configurado
-=== C1 TEST END 2026-06-11T13:59:19+00:00 ===

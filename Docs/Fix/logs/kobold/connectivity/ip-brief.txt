@@ -1,4 +1,0 @@
-lo               UNKNOWN        127.0.0.1/8 ::1/128 
-ens3             UP             10.0.0.223/24 metric 100 fe80::17ff:fe04:7a97/64 
-docker0          UP             172.17.0.1/16 fe80::c8a6:b2ff:fe3b:43ac/64 
-veth42ec99e@if2  UP             fe80::e437:57ff:fe1f:cbd0/64 

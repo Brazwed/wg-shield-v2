@@ -1,4 +1,0 @@
-udp   UNCONN 0      0           127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=500,fd=16)) uid:992 ino:4893 sk:1001 cgroup:/system.slice/systemd-resolved.service <->       
-udp   UNCONN 0      0        127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=500,fd=14)) uid:992 ino:4891 sk:1002 cgroup:/system.slice/systemd-resolved.service <->       
-tcp   LISTEN 0      4096        127.0.0.54:53         0.0.0.0:*    users:(("systemd-resolve",pid=500,fd=17)) uid:992 ino:4894 sk:3 cgroup:/system.slice/systemd-resolved.service <->          
-tcp   LISTEN 0      4096     127.0.0.53%lo:53         0.0.0.0:*    users:(("systemd-resolve",pid=500,fd=15)) uid:992 ino:4892 sk:4 cgroup:/system.slice/systemd-resolved.service <->          

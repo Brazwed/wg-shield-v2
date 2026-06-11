@@ -1,5 +1,0 @@
-[1:0] info: 192.168.1.100 example.com. A IN
-[2:0] info: 10.8.1.5 google.com. AAAA IN
-[1:0] info: 203.0.113.50 suspicious.com. ANY IN
-[3:0] info: 198.51.100.23 test.org. MX IN
-Jan 01 12:00:00 server unbound[12345]: [1:0] info: 172.16.0.1 query.example.net. TXT IN
