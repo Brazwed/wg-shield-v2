@@ -33,14 +33,14 @@ Branch: `fix/execution-queue-round-1`
 
 ## Etapa 4 — Médio de idempotência e validação
 
-| ID      | Fxx       | Status   | Commit   | Observação                                                                  |
-| ------- | --------- | -------- | -------- | --------------------------------------------------------------------------- |
-| B1      | F13       | OK       | 4dc7b21  | `grep -q` antes de append no fstab                                          |
-| B2      | F14       | OK       | e772265  | sed replace ou append para swappiness e vfs_cache_pressure                  |
-| B4      | F36       | OK       | ba27472  | `df --output=avail` checa 2300MB antes de dd; i18n `HARDEN_SWAP_NOSPACE`   |
-| B8      | F37       | OK       | 4947689  | `warn` com i18n `HARDEN_UNATTENDED_REBOOT_WARN` antes dos sed              |
-| B9      | F38       | OK       | bfafa31  | `"dns"` + `${WIZARD_MOD_9}` adicionados ao arrays em show_already_installed  |
-| B10-VAL | F22       | PENDENTE | —        | Bug estrutural confirmado por análise de código; requer sandbox p/ T26       |
+| ID      | Fxx       | Status | Commit   | Observação                                                                  |
+| ------- | --------- | ------ | -------- | --------------------------------------------------------------------------- |
+| B1      | F13       | OK     | 4dc7b21  | `grep -q` antes de append no fstab                                          |
+| B2      | F14       | OK     | e772265  | sed replace ou append para swappiness e vfs_cache_pressure                  |
+| B4      | F36       | OK     | ba27472  | `df --output=avail` checa 2300MB antes de dd; i18n `HARDEN_SWAP_NOSPACE`   |
+| B8      | F37       | OK     | 4947689  | `warn` com i18n `HARDEN_UNATTENDED_REBOOT_WARN` antes dos sed              |
+| B9      | F38       | OK     | bfafa31  | `"dns"` + `${WIZARD_MOD_9}` adicionados ao arrays em show_already_installed  |
+| B10-VAL | F22       | OK     | 4e95d76  | Bug confirmado via VPS kobold; `20auto-upgrades` agora criado explicitamente; `dpkg-reconfigure` removido |
 
 ## Etapa 5 — Alto runtime sem firewall pesado
 
@@ -80,12 +80,12 @@ Branch: `fix/execution-queue-round-1`
 
 ## Pendências / follow-ups
 
-| Item           | Tipo               | Status   | Observação                                                                                    |
-| -------------- | ------------------ | -------- | --------------------------------------------------------------------------------------------- |
-| Shellcheck     | ferramenta         | PENDENTE | Não instalado; recomendado antes da Etapa 5                                                    |
-| LOG_RESTORED   | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19                       |
-| A10/F31        | no-op verificado   | OK       | README já correto; bug real (NEW VPS não instala WIZARD_MOD_9) corrigido em A2                |
-| B10-VAL / F22  | validação          | PENDENTE | Bug estrutural confirmado por análise; dpkg-reconfigure gated behind install; falta sandbox p/ T26 |
+| Item           | Tipo               | Status   | Observação                                                                  |
+| -------------- | ------------------ | -------- | --------------------------------------------------------------------------- |
+| Shellcheck     | ferramenta         | PENDENTE | Não instalado localmente; recomendado antes da Etapa 5                       |
+| LOG_RESTORED   | possível follow-up | PENDENTE | Mesmo padrão morto de interpolação (`$timestamp`), fora do escopo de F19    |
+| A10/F31        | no-op verificado   | OK       | README já correto; bug real corrigido em A2                                 |
+| B10-VAL / F22  | validação+fix      | OK       | Bug confirmado via VPS kobold; `20auto-upgrades` criado explicitamente      |
 
 ---
 
@@ -93,9 +93,9 @@ Branch: `fix/execution-queue-round-1`
 
 | Status     | Qtd |
 | ---------- | --- |
-| OK         | 15  |
+| OK         | 16  |
 | SKIP       | 1   |
-| PENDENTE   | 6   |
+| PENDENTE   | 5   |
 | BLOQUEADO  | 15  |
 
-**Progresso:** 16/36 achados endereçados (15 corrigidos + 1 no-op verificado)
+**Progresso:** 17/36 achados endereçados (16 corrigidos + 1 no-op verificado)
